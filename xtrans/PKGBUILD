@@ -1,0 +1,36 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=xtrans
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="X transport library"
+arch=(any)
+license=('custom')
+url="https://xorg.freedesktop.org/"
+groups=('development')
+source=(${url}/archive//individual/lib/${pkgname}-${pkgver}.tar.bz2)
+sha256sums=('377c4491593c417946efcd2c7600d1e62639f7a8bbca391887e2c4679807d773')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  make  DESTDIR="${pkgdir}" install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING* \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+
+  install -m755 -d "${pkgdir}/usr/lib"
+  mv "${pkgdir}/usr/share/pkgconfig" "${pkgdir}/usr/lib/"
+}
