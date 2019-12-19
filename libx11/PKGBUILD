@@ -1,0 +1,60 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libx11' 'libx11-devel')
+pkgver=1.6.8
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'xorgproto' 'xtrans')
+source=(${url}releases/individual/lib/libX11-${pkgver}.tar.bz2
+        dont-forward-keycode-0.patch
+        fix-locale_t.patch)
+sha256sums=('b289a845c189e251e0e884cc0f9269bbe97c238df3741e854ec4c17c21e473d5'
+            '47ae492f52933334c0d3a16dc0cda17736a16b326556bafd49e545933a729ac3'
+            '84aa858ae576a588927fd800bc7a2b3a2f83086a68105417123b4a2527f253b5')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -Np1 -i ../dont-forward-keycode-0.patch
+  patch -Np1 -i ../fix-locale_t.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --without-launchd
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libx11() {
+  pkgdesc="X11 client-side library"
+  groups=('libraries')
+  depends=('libxcb')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/*  -t ${pkgdir}/usr/bin
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+  cp -rf ${srcdir}/dest/usr/share/X11 ${pkgdir}/usr/share/
+}
+
+package_libx11-devel() {
+  pkgdesc="libx11 headers and libraries"
+  groups=('development')
+  depends=("libx11=${pkgver}" 'libxcb-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/*.h -t ${pkgdir}/usr/include/X11/
+  install -Dm644 ${srcdir}/dest/usr/lib/libX11* -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/x11*.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man5/*.5 \
+    -t ${pkgdir}/usr/share/man/man5/
+  install -m755 -d ${pkgdir}/usr/share/doc/
+  cp -rf ${srcdir}/dest/usr/share/doc/libX11 ${pkgdir}/usr/share/doc/
+}
