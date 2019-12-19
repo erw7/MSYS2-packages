@@ -1,0 +1,49 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxau' 'libxau-devel')
+pkgver=1.0.9
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('pkg-config')
+source=(${url}/reelases//individual/lib/libXau-${pkgver}.tar.bz2)
+sha256sums=('ccf8cbf0dbf676faa2ea0a6d64bcc3b6746064722b606c8c52917ed00dcb73ec')
+
+prepare() {
+  cd libXau-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXau-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make -j1
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxau() {
+  pkgdesc="X11 authorisation library"
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/*  -t ${pkgdir}/usr/bin
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxau-devel() {
+  pkgdesc="LibXau headers and libraries"
+  group=('development')
+  depends=("libxau=${pkgver}" 'xorgproto')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/Xauth.h \
+    -t ${pkgdir}/usr/include/X11/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXau*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xau.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/Xau*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+  }
