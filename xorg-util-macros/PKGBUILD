@@ -1,0 +1,35 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=xorg-util-macros
+pkgver=1.19.2
+pkgrel=1
+pkgdesc="X.Org Autotools macros"
+arch=(any)
+license=('custom')
+url="http://xorg.freedesktop.org/"
+groups=('development')
+source=(${url}/release/individual/util/util-macros-${pkgver}.tar.bz2)
+sha256sums=('d7e43376ad220411499a79735020f9d145fdc159284867e99467e0d771f3e712')
+
+prepare() {
+  cd util-macros-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd util-macros-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd util-macros-${pkgver}
+  make DESTDIR="${pkgdir}" install
+
+  install -m755 -d "${pkgdir}/usr/lib"
+  mv "${pkgdir}/usr/share/pkgconfig" "${pkgdir}/usr/lib/"
+  install -Dm644 "${srcdir}"/util-macros-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
