@@ -1,0 +1,82 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxcb' 'libxcb-devel')
+pkgver=1.13
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xcb.freedesktop.org/"
+makedepends=('python' 'xorg-util-macros')
+source=(${url}dist/${pkgname}-${pkgver}.tar.bz2
+        1.8.1-no-pthread-stubs.patch)
+sha256sums=('188c8752193c50ff2dbe89db4554c63df2e26a2e47b0fa415a70918b5b851daa'
+            '0cb979bc7bc1cbd66eacdb09255f19525558dc925355ae6fae6488528aa41658')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -Np2 -i ../1.8.1-no-pthread-stubs.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --enable-composite \
+  --enable-damage \
+  --enable-dpms \
+  --enable-dri2 \
+  --enable-glx \
+  --enable-randr \
+  --enable-record \
+  --enable-render \
+  --enable-resource \
+  --enable-screensaver \
+  --enable-shape \
+  --enable-shm \
+  --enable-sync \
+  --enable-xfixes \
+  --enable-xineram \
+  --enable-xinput \
+  --enable-xkb \
+  --enable-xtet \
+  --enable-present \
+  --disable-dri3 \
+  --disable-selinux \
+  --disable-xfree86-dri \
+  --disable-xevie \
+  --disable-xprint \
+  --disable-xv \
+  --disable-xvmc
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxcb() {
+  pkgdesc="X11 client-side library"
+  groups=('libraries')
+  depends=('libxau' 'libxdmcp')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxcb-devel() {
+  pkgdesc="Libxcb headers and libraries"
+  groups=('development')
+  depends=("libxcb=${pkgver}" 'libxau-devel' 'libxdmcp-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/xcb/*.h \
+    -t ${pkgdir}/usr/include/xcb/
+  rm ${pkgdir}/usr/include/xcb/{dri3,xevie,xf86dri,xprint,xselinux,xv,xvmc}.h
+  install -Dm644 ${srcdir}/dest/usr/lib/libxcb*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xcb*.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/xcb* \
+    -t ${pkgdir}/usr/share/man/man3/
+  install -Dm644 ${srcdir}/dest/usr/share/doc/libxcb/tutorial/* \
+    -t ${pkgdir}/usr/share/doc/libxcb/tutoria/
+}
