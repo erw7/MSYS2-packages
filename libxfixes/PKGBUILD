@@ -1,0 +1,50 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxfixes' 'libxfixes-devel')
+pkgver=5.0.3
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'xorgproto')
+source=(${url}releases/individual/lib/libXfixes-${pkgver}.tar.bz2)
+sha256sums=('de1cd33aff226e08cefd0e6759341c2c8e8c9faf8ce9ac6ec38d43e287b22ad6')
+
+prepare() {
+  cd libXfixes-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXfixes-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxfixes() {
+  pkgdesc="X11 miscellaneous 'fixes' extension library"
+  depends=('libx11')
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxfixes-devel() {
+  pkgdesc="LibXfixes headers and libraries"
+  groups=('development')
+  depends=("libxfixes=${pkgver}" 'libx11-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/extensions/*.h \
+    -t ${pkgdir}/usr/include/X11/extensions/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXfixes*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xfixes.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/Xfixes.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
