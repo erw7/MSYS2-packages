@@ -1,0 +1,50 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxcomposite' 'libxcomposite-devel')
+pkgver=0.4.5
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'xorgproto' 'libxfixes-devel')
+source=(${url}releases/individual/lib/libXcomposite-${pkgver}.tar.bz2)
+sha256sums=('b3218a2c15bab8035d16810df5b8251ffc7132ff3aa70651a1fba0bfe9634e8f')
+
+prepare() {
+  cd libXcomposite-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXcomposite-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxcomposite() {
+  pkgdesc="X11 Composite extension library"
+  depends=('libxfixes')
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxcomposite-devel() {
+  pkgdesc="LibXcomposite headers and libraries"
+  groups=('development')
+  depends=("libxcomposite=${pkgver}" 'libxfixes-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/extensions/*.h \
+    -t ${pkgdir}/usr/include/X11/extensions/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXcomposite*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xcomposite.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/X*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
