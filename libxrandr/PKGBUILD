@@ -1,0 +1,50 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxrandr' 'libxrandr-devel')
+pkgver=1.5.2
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'xorgproto')
+source=(${url}releases/individual/lib/libXrandr-${pkgver}.tar.bz2)
+sha256sums=('8aea0ebe403d62330bb741ed595b53741acf45033d3bda1792f1d4cc3daee023')
+
+prepare() {
+  cd libXrandr-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXrandr-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxrandr() {
+  pkgdesc="X11 RandR extension library"
+  depends=('libxext' 'libxrender')
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxrandr-devel() {
+  pkgdesc="libxrandr headers and libraries"
+  groups=('development')
+  depends=("libxrandr=${pkgver}" 'libxext-devel' 'libxrender-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/extensions/*.h \
+    -t ${pkgdir}/usr/include/X11/extensions/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXrandr*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xrandr.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
