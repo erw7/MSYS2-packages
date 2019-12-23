@@ -1,0 +1,52 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxi' 'libxi-devel')
+pkgver=1.7.9
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'libxfixes-devel' 'xorgproto')
+source=(${url}releases/individual/lib/libXi-${pkgver}.tar.bz2)
+sha256sums=('c2e6b8ff84f9448386c1b5510a5cf5a16d788f76db018194dacdc200180faf45')
+
+prepare() {
+  cd libXi-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXi-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxi() {
+  pkgdesc="X11 Input extension library"
+  depends=('libxext')
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 ${srcdir}/dest/usr/share/doc/libXi/*.xml \
+    -t ${pkgdir}/usr/share/doc/libXi/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxi-devel() {
+  pkgdesc="libxi headers and libraries"
+  groups=('development')
+  depends=("libxi=${pkgver}" 'libxext-devel' 'libxfixes-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/extensions/XInput*.h \
+    -t ${pkgdir}/usr/include/X11/extensions/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXi*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xi.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
