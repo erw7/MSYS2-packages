@@ -1,0 +1,50 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxinerama' 'libxinerama-devel')
+pkgver=1.1.4
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('xorg-util-macros' 'xorgproto')
+source=(${url}releases/individual/lib/libXinerama-${pkgver}.tar.bz2)
+sha256sums=('0008dbd7ecf717e1e507eed1856ab0d9cf946d03201b85d5dcf61489bb02d720')
+
+prepare() {
+  cd libXinerama-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXinerama-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxinerama() {
+  pkgdesc="X11 Xinerama extension library"
+  depends=('libxext')
+  groups=('libraries')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxinerama-devel() {
+  pkgdesc="libxinerama headers and libraries"
+  groups=('development')
+  depends=("libxinerama=${pkgver}" 'libxext-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/extensions/*.h \
+    -t ${pkgdir}/usr/include/X11/extensions/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXinerama*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xinerama.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/*.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
