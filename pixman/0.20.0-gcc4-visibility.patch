@@ -1,0 +1,11 @@
+--- origsrc/pixman-0.20.0/pixman/pixman-compiler.h	2010-10-27 15:43:03.000000000 -0500
++++ src/pixman-0.20.0/pixman/pixman-compiler.h	2010-10-31 02:53:28.801702100 -0500
+@@ -65,7 +65,7 @@
+ #endif
+ 
+ /* GCC visibility */
+-#if defined(__GNUC__) && __GNUC__ >= 4 && !defined(_WIN32)
++#if defined(__GNUC__) && __GNUC__ >= 4 && !defined(_WIN32) && !defined(__CYGWIN__)
+ #   define PIXMAN_EXPORT __attribute__ ((visibility("default")))
+ /* Sun Studio 8 visibility */
+ #elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)

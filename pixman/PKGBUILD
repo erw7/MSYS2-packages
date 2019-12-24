@@ -1,0 +1,36 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=pixman
+pkgver=0.38.4
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://cgit.freedesktop.org/pixman/"
+pkgdesc="The pixel-manipulation library for X and cairo"
+makedepends=('libpng')
+source=("https://xorg.freedesktop.org/releases/individual/lib/${pkgname}-${pkgver}.tar.bz2"
+        "0.20.0-gcc4-visibility.patch")
+sha256sums=('84abb7fa2541af24d9c3b34bf75d6ac60cc94ac4410061bbb295b66a29221550'
+            'eee1ac6d10a912a6dd82b1e01483f6a79297ecbd29daa93a47ef5d2a77c4ecae')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p2 -i ${srcdir}/0.20.0-gcc4-visibility.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
