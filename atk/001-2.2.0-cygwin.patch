@@ -1,0 +1,13 @@
+If ATK_VAR is dllexport and functions are not, only the former is exported
+
+--- origsrc/atk-2.2.0/atk/atkmisc.h	2011-09-19 12:06:54.000000000 -0500
++++ src/atk-2.2.0/atk/atkmisc.h	2011-11-15 21:21:49.310277100 -0600
+@@ -30,7 +30,7 @@
+  * properly get exported in Windows DLLs.
+  */
+ #ifndef ATK_VAR
+-#  ifdef G_PLATFORM_WIN32
++#  ifdef G_OS_WIN32
+ #    ifdef ATK_STATIC_COMPILATION
+ #      define ATK_VAR extern
+ #    else /* !ATK_STATIC_COMPILATION */

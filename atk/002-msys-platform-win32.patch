@@ -1,0 +1,11 @@
+--- atk-2.26.1/configure.ac.orig	2019-12-24 14:35:33.731681200 +0900
++++ atk-2.26.1/configure.ac	2019-12-24 14:36:03.480017600 +0900
+@@ -96,7 +96,7 @@
+ 
+ AC_MSG_CHECKING([for some Win32 platform])
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*)
++  *-*-mingw*|*-*-cygwin*|*-*-msys*)
+     platform_win32=yes
+     ;;
+   *)

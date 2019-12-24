@@ -1,0 +1,37 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=atk
+pkgver=2.26.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL)
+url="https://gitlab.gnome.org/GNOME/atk"
+pkgdesc="Interface definitions of accessibility infrastructure"
+depends=(glib2)
+makedepends=('glib2-devel' 'gobject-introspection')
+source=("https://ftp.gnome.org/pub/GNOME/sources/atk/2.26/${pkgname}-${pkgver}.tar.xz"
+        "001-2.2.0-cygwin.patch"
+        "002-msys-platform-win32.patch")
+sha256sums=('ef00ff6b83851dddc8db38b4d9faeffb99572ba150b0664ee02e46f015ea97cb'
+            '51ed556ff7e90e0b3ecbeec34577052395617ef97e98aa06a32144ee8401e851'
+            'c0630bc3c73f824e897e787ce01bee18438873234986544b321e6365459ddb5f')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p2 -i ${srcdir}/001-2.2.0-cygwin.patch
+  patch -p1 -i ${srcdir}/002-msys-platform-win32.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}
