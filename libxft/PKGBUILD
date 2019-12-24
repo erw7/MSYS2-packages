@@ -1,0 +1,50 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=('libxft' 'libxft-devel')
+pkgver=2.3.3
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://xorg.freedesktop.org/"
+makedepends=('pkg-config')
+source=(${url}releases/individual/lib/libXft-${pkgver}.tar.bz2)
+sha256sums=('225c68e616dd29dbb27809e45e9eadf18e4d74c50be43020ef20015274529216')
+
+prepare() {
+  cd libXft-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd libXft-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+  make DESTDIR=${srcdir}/dest install
+}
+
+package_libxft() {
+  pkgdesc="FreeType-based font drawing library for X"
+  groups=('libraries')
+  depends=('fontconfig' 'libxrender')
+
+  install -Dm755 ${srcdir}/dest/usr/bin/* -t ${pkgdir}/usr/bin/
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_libxft-devel() {
+  pkgdesc="Libxft headers and libraries"
+  groups=('development')
+  depends=("libxft=${pkgver}" 'libxrender-devel')
+
+  install -Dm644 ${srcdir}/dest/usr/include/X11/Xft/*.h \
+    -t ${pkgdir}/usr/include/X11/Xft/
+  install -Dm644 ${srcdir}/dest/usr/lib/libXft*.a \
+    -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/xft.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/dest/usr/share/man/man3/Xft.3 \
+    -t ${pkgdir}/usr/share/man/man3/
+}
