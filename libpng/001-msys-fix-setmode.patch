@@ -1,0 +1,24 @@
+--- libpng-1.6.37/contrib/pngminus/pnm2png.c.orig	2019-12-24 14:08:47.732923800 +0900
++++ libpng-1.6.37/contrib/pngminus/pnm2png.c	2019-12-24 14:11:38.816332400 +0900
+@@ -9,6 +9,9 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <fcntl.h>
++#ifdef __MSYS__
++# include <io.h>
++#endif
+ 
+ #ifndef BOOL
+ #define BOOL unsigned char
+--- libpng-1.6.37/contrib/pngminus/png2pnm.c.orig	2019-12-24 14:09:01.068283800 +0900
++++ libpng-1.6.37/contrib/pngminus/png2pnm.c	2019-12-24 14:11:10.901020500 +0900
+@@ -9,6 +9,9 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <fcntl.h>
++#ifdef __MSYS__
++# include <io.h>
++#endif
+ 
+ #ifndef BOOL
+ #define BOOL unsigned char

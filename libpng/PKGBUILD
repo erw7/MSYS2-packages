@@ -1,0 +1,41 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libpng
+pkgver=1.6.37
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="http://www.libpng.org/pub/png/libpng.html"
+pkgdesc="A collection of routines used to create PNG format graphics files"
+depends=('zlib')
+makedepends=('zlib-devel')
+source=("https://downloads.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.xz"
+        "001-msys-fix-setmode.patch")
+sha256sums=('505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca'
+            '92b4749b9d08826b3fa4ba172d97aeb22d57dbe274ec126dec6fc71ed58e150e')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/001-msys-fix-setmode.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/LICENSE \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+
+  cd contrib/pngminus
+  make PNGLIB_SHARED="-L${pkgdir}/usr/lib -lpng" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" png2pnm pnm2png
+  install -m755 png2pnm.exe pnm2png.exe ${pkgdir}/usr/bin
+}
