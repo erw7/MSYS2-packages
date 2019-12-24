@@ -1,0 +1,54 @@
+--- origsrc/libwmf-0.2.8.4/src/Makefile.am	2004-02-10 13:41:26.000000000 +0100
++++ src/libwmf-0.2.8.4/src/Makefile.am	2012-09-05 10:40:15.765625000 +0200
+@@ -20,7 +20,7 @@ DIST_SUBDIRS = extra ipa . convert
+ 
+ SUBDIRS = $(DIRHEAVY)
+ 
+-CFLAGS = @CFLAGS@ @WMF_CFLAGS@ @GDK_PIXBUF_CFLAGS@
++AM_CFLAGS = @WMF_CFLAGS@ @GDK_PIXBUF_CFLAGS@
+ 
+ DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) $(GDK_PIXBUF_DEFS) \
+ 	-DPACKAGE=\"@PACKAGE@\" \
+--- origsrc/libwmf-0.2.8.4/src/convert/Makefile.am	2002-05-16 09:48:38.000000000 +0200
++++ src/libwmf-0.2.8.4/src/convert/Makefile.am	2012-09-05 10:40:15.765625000 +0200
+@@ -1,6 +1,6 @@
+-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
++AM_CFLAGS = @WMF_CFLAGS@
+ 
+-LDFLAGS = -L$(top_builddir)/src/.libs @WMF_LIBFLAGS@ @LDFLAGS@
++LDADD = -L$(top_builddir)/src/.libs @WMF_LIBFLAGS@ @LDFLAGS@
+ 
+ DEFS = @DEFS@ @WMF_DEFS@ \
+ 	-DPACKAGE=\"@PACKAGE@\" \
+--- origsrc/libwmf-0.2.8.4/src/extra/gd/Makefile.am	2002-06-23 10:48:23.000000000 +0200
++++ src/libwmf-0.2.8.4/src/extra/gd/Makefile.am	2012-09-05 10:40:15.765625000 +0200
+@@ -1,8 +1,6 @@
+ INCLUDES = -I$(srcdir)
+ 
+-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
+-
+-LDFLAGS = @LDFLAGS@
++AM_CFLAGS = @WMF_CFLAGS@
+ 
+ DEFS = @DEFS@ @GD_DEFS@
+ 
+--- origsrc/libwmf-0.2.8.4/src/extra/trio/Makefile.am	2001-07-11 12:12:27.000000000 +0200
++++ src/libwmf-0.2.8.4/src/extra/trio/Makefile.am	2012-09-05 10:40:15.765625000 +0200
+@@ -1,6 +1,4 @@
+-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
+-
+-LDFLAGS = @LDFLAGS@
++AM_CFLAGS = @WMF_CFLAGS@
+ 
+ DEFS = @DEFS@ @WMF_DEFS@
+ 
+--- origsrc/libwmf-0.2.8.4/src/ipa/Makefile.am	2002-05-16 09:48:10.000000000 +0200
++++ src/libwmf-0.2.8.4/src/ipa/Makefile.am	2012-09-05 10:40:15.781250000 +0200
+@@ -1,6 +1,4 @@
+-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
+-
+-LDFLAGS = @LDFLAGS@
++AM_CFLAGS = @WMF_CFLAGS@
+ 
+ DEFS = @DEFS@ @WMF_DEFS@ \
+ 	-DPACKAGE=\"@PACKAGE@\" \

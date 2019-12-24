@@ -1,0 +1,79 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=freetype2
+pkgname=('freetype2' 'freetype2-demos' 'freetype2-docs')
+pkgver=2.9.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(GPL)
+url="https://www.freetype.org/"
+pkgdesc="Font rasterization library"
+depends=('zlib' 'bzip2' 'libpng')
+makedepends=('zlib-devel' 'libx11-devel')
+source=("https://download-mirror.savannah.gnu.org/releases/freetype/freetype-${pkgver}.tar.bz2"
+        "https://download-mirror.savannah.gnu.org/releases/freetype/freetype-doc-${pkgver}.tar.bz2"
+        "https://download-mirror.savannah.gnu.org/releases/freetype/ft2demos-${pkgver}.tar.bz2"
+        "freetype-2.3.0-enable-spr.patch"
+        "freetype-2.2.1-enable-valid.patch"
+        "freetype-2.6.5-libtool.patch")
+sha256sums=('db8d87ea720ea9d5edc5388fc7a0497bb11ba9fe972245e0f7f4c7e8b1e1e84d'
+            'aa2f835ef8f50072630ddc48b9eb65f1f456014ffa3b5adddcb6bf390a3c5828'
+            '806eb6363ee5963174a6740f9b7893377912165899c2c1f6372c422aab818c6a'
+            'd206df72e6902266542142b85ca9034214c0bfe7875ae12c91fd57896b712865'
+            '1db56bd3234557a9f110b795191033d6610654d39ea05a1597ba4672290166e7'
+            '77b311a2f3e309f73da0f6417f12be215a41fa9d3024b1a8f8fb1a85556e311c')
+
+prepare() {
+  # Rename source dir to allow building the demos  cd ${pkgname}-${pkgver}
+  mv freetype-${pkgver} freetype2
+  mv ft2demos-${pkgver} freetype2-demos
+
+  cd freetype2
+  patch -p1 -i ${srcdir}/freetype-2.3.0-enable-spr.patch
+  patch -p1 -i ${srcdir}/freetype-2.2.1-enable-valid.patch
+  patch -p1 -i ${srcdir}/freetype-2.6.5-libtool.patch
+  ./autogen.sh
+}
+
+build() {
+  cd freetype2
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --with-zlib \
+  --with-bzip2 \
+  --with-png \
+  --without-harfbuzz \
+  --enable-freetype-config
+  make
+
+  # Build demos
+  cd ../freetype2-demos
+  make
+}
+
+package_freetype2() {
+
+  cd freetype2
+  make DESTDIR=${pkgdir} install
+}
+
+package_freetype2-demos() {
+  pkgdesc="Freetype tools and demos"
+  depends=('freetype2' 'libx11')
+
+  cd freetype2-demos
+  install -d ${pkgdir}/usr/bin
+  for _i in bin/{f,t}t*; do
+    libtool --mode=install install $_i ${pkgdir}/usr/bin
+  done
+}
+
+package_freetype2-docs() {
+  pkgdesc="Freetype documentation"
+  depends=('freetype2')
+
+  cd freetype2
+  install -d "${pkgdir}/usr/share/doc"
+  cp -a docs "${pkgdir}/usr/share/doc/freetype2"
+ }

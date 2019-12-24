@@ -1,0 +1,93 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libwmf
+pkgver=0.2.8.4
+pkgrel=1
+pkgdesc="A library for reading vector images in Microsoft's native Windows Metafile Format (WMF)"
+url="http://wvware.sourceforge.net/libwmf.html"
+arch=('i686' 'x86_64')
+license=(LGPL)
+depends=(libx11 libjpeg-turbo freetype2 expat)
+makedepends=(libxslt)
+source=("${pkgname}-${pkgver}.tar.gz::https://sourceforge.net/projects/wvware/files/libwmf/0.2.8.4/libwmf-0.2.8.4.tar.gz/download"
+        "libwmf-0.2.8.3-relocatablefonts.patch"
+        "libwmf-0.2.8.4-CAN-2004-0941.patch"
+        "libwmf-0.2.8.4-CVE-2007-0455.patch"
+        "libwmf-0.2.8.4-CVE-2007-2756.patch"
+        "libwmf-0.2.8.4-CVE-2007-3472.patch"
+        "libwmf-0.2.8.4-CVE-2007-3473.patch"
+        "libwmf-0.2.8.4-CVE-2007-3477.patch"
+        "libwmf-0.2.8.4-CVE-2009-3546.patch"
+        "libwmf-0.2.8.4-CVE-2015-0848+CVE-2015-4588.patch"
+        "libwmf-0.2.8.4-CVE-2015-4695.patch"
+        "libwmf-0.2.8.4-CVE-2015-4696.patch"
+        "libwmf-0.2.8.4-deps.patch"
+        "libwmf-0.2.8.4-fallbackfont.patch"
+        "libwmf-0.2.8.4-intoverflow.patch"
+        "libwmf-0.2.8.4-pixbufloaderdir.patch"
+        "libwmf-0.2.8.4-reducesymbols.patch"
+        "libwmf-0.2.8.4-useafterfree.patch"
+        "libwmf-configin.patch"
+        "libwmf-Makefileam.patch")
+
+md5sums=('d1177739bf1ceb07f57421f0cee191e0'
+         'b0bbe19d7ccdfd33c5f19c5c34b9cc20'
+         '3438e4c342971d1cf08c74aa6f9c3274'
+         'a599c4593e298a5428c9fbebcfc4b5b0'
+         'ac317d46afcfa7335771cd2ea1eb9acc'
+         '182d8bd5458a99eb60a57b5ee2fec8ea'
+         'c4869329112c8f504eb81904091d8da3'
+         'ca323aa19b2dbfc70f284481d32ea72c'
+         'ef259b133583e228ab1af50d50ea72f4'
+         '247f96adb7977434d494600ac22eeb6f'
+         'fd15b5b52a5fbdb7212b7327672ba067'
+         'e4a7fd9c4a1b2d73644862329970ea05'
+         '9da61afa81285f0c49f547d7def0d31b'
+         'd819e77332ec482389ca216e03e0911d'
+         'af50a4b45bd99e0a489e04c32c1bdf36'
+         '1e3096ca066ff60325320ec3648895ed'
+         '3d6f5866d9a730c831ce3b041ca5535b'
+         '0f02c1cb8a87bf7158634503bf0537e2'
+         '3fc756ea8ceef1e69dcc39bbea92452c'
+         '3507b3bf838b17dac932fd4a3acaffef')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.3-relocatablefonts.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-fallbackfont.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-deps.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-intoverflow.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-reducesymbols.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-useafterfree.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-pixbufloaderdir.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2007-0455.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2007-3472.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2007-3473.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2007-3477.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2007-2756.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CAN-2004-0941.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2009-3546.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2015-0848+CVE-2015-4588.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2015-4695.patch
+  patch -p1 -i ${srcdir}/libwmf-0.2.8.4-CVE-2015-4696.patch
+  patch -p2 -i ${srcdir}/libwmf-configin.patch
+  patch -p2 -i ${srcdir}/libwmf-Makefileam.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --with-expat \
+    --with-freetype \
+    --with-zlib \
+    --with-png
+    make
+}
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  make DESTDIR=${pkgdir} install -j1
+}
