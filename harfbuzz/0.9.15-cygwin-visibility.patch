@@ -1,0 +1,11 @@
+--- origsrc/harfbuzz-0.9.15/configure.ac	2013-04-05 17:00:01.000000000 -0500
++++ src/harfbuzz-0.9.15/configure.ac	2013-04-15 21:35:37.310161500 -0500
+@@ -73,7 +73,7 @@ if test "x$GCC" = "xyes"; then
+ 	CXXFLAGS="$CXXFLAGS -Wcast-align"
+ 
+ 	case "$host" in
+-		*-*-mingw*)
++		*-*-cygwin*|*-*-mingw*)
+ 		;;
+ 		*)
+ 			# Hide inline methods

@@ -1,0 +1,65 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=harfbuzz
+pkgname=(harfbuzz harfbuzz-icu)
+pkgver=2.5.3
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(MIT)
+url="https://www.freedesktop.org/wiki/Software/HarfBuzz"
+pkgdesc="OpenType text shaping engine"
+depends=(glib2 freetype2 graphite)
+makedepends=(cairo icu-devel)
+source=("https://www.freedesktop.org/software/harfbuzz/release/${pkgbase}-${pkgver}.tar.xz"
+        "0.9.15-cygwin-visibility.patch")
+md5sums=('29a310e74a90b4e4f6d62f3e74a571e5'
+         'f6d89a28b64014fdc8a78add85105ef8')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p2 -i ${srcdir}/0.9.15-cygwin-visibility.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --with-cairo \
+    --with-freetype \
+    --with-glib \
+    --with-gobject \
+    --with-graphite2 \
+    --with-icu \
+    --without-coretext \
+    --without-directwrite \
+    --without-uniscribe \
+    --enable-gtk-doc
+    make
+}
+
+package_harfbuzz() {
+  cd ${pkgbase}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 ${srcdir}/${pkgbase}-${pkgver}/COPYING \
+    -t ${pkgdir}/usr/share/licenses/${pkgbase}/
+
+  # Split harfbuzz-icu
+  mkdir -p ../hb-icu/usr/{bin,include/harfbuzz,lib/pkgconfig}; cd ../hb-icu
+  mv ${pkgdir}/usr/bin/msys-harfbuzz-icu-* ./usr/bin/
+  mv ${pkgdir}/usr/lib/libharfbuzz-icu* ./usr/lib/
+  mv ${pkgdir}/usr/lib/pkgconfig/harfbuzz-icu.pc ./usr/lib/pkgconfig/
+  mv ${pkgdir}/usr/include/harfbuzz/hb-icu.h ./usr/include/harfbuzz/
+}
+
+package_harfbuzz-icu() {
+  pkgdesc="$pkgdesc (ICU integration)"
+  depends=(harfbuzz icu)
+
+  mv hb-icu/* ${pkgdir}
+
+  install -Dm644 ${srcdir}/${pkgbase}-${pkgver}/COPYING \
+    -t ${pkgdir}/usr/share/licenses/${pkgbase}-icu/
+ }
