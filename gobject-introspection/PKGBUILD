@@ -1,0 +1,58 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=gobject-introspection
+pkgname=(gobject-introspection gobject-introspection-runtime)
+pkgver=1.54.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL GPL)
+url="https://wiki.gnome.org/Projects/GObjectIntrospection"
+pkgdesc="Introspection system for GObject-based libraries"
+makedepends=(cairo gtk-doc glib2 python3)
+source=("https://download.gnome.org/sources/gobject-introspection/1.54/${pkgbase}-${pkgver}.tar.xz"
+        "0001-1.46.0-msys.patch"
+        "0002-1.42.0-exeext.patch"
+        "0003-1.36.0-tests-expected.patch"
+        "0004-1.36.0-python-libs.patch"
+        "0005-fix-python3.patch")
+md5sums=('126c29e4d54adbed2ed4e2b04483de41'
+         '80cef676ed8a24ee7e96c8027e06df4e'
+         '43bedeb7dd887f662e2e6a6d6e5a8f97'
+         '3f0f70b2d5fe0b59a45a0344d0ab4924'
+         '5b622f74f62584d9fb48135cfc2067bf'
+         '1f5e689c36f3d603006aa5f8a9bd2991')
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p2 -i ${srcdir}/0001-1.46.0-msys.patch
+  patch -p2 -i ${srcdir}/0002-1.42.0-exeext.patch
+  patch -p2 -i ${srcdir}/0003-1.36.0-tests-expected.patch
+  patch -p2 -i ${srcdir}/0004-1.36.0-python-libs.patch
+  patch -p1 -i ${srcdir}/0005-fix-python3.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --with-python=python3
+    make
+}
+
+package_gobject-introspection() {
+  depends+=("gobject-introspection-runtime=${pkgver}-${pkgrel}")
+  cd ${pkgbase}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  # Split runtime
+  mkdir -p ${srcdir}/runtime/lib
+  mv ${pkgdir}/usr/lib/{lib*,girepository-*} ${srcdir}/runtime/lib/
+}
+
+package_gobject-introspection-runtime() {
+  pkgdesc+="i (runtime library)"
+  depends=(glib2)
+
+   mv ${srcdir}/runtime ${pkgdir}/usr/
+ }

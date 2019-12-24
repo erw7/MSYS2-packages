@@ -1,0 +1,11 @@
+--- gobject-introspection-1.54.1/giscanner/dumper.py.orig	2019-12-25 00:36:19.042439600 +0900
++++ gobject-introspection-1.54.1/giscanner/dumper.py	2019-12-25 00:37:43.020055100 +0900
+@@ -284,7 +284,7 @@
+             with os.fdopen(tf, 'wb') as f:
+                 shellcontents = ' '.join([x.replace('\\', '/') for x in args])
+                 fcontents = '#!/bin/sh\nunset PWD\n{}\n'.format(shellcontents)
+-                f.write(fcontents)
++                f.write(fcontents.encode('utf-8'))
+             shell = utils.which(shell)
+             args = [shell, tf_name.replace('\\', '/')]
+         try:
