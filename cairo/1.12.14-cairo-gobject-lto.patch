@@ -1,0 +1,14 @@
+libcairo-gobject seems to trigger a yet unidentified bug in LTO,
+causing cairo_gobject_*_get_type() to go off to la-la land.
+
+--- origsrc/cairo-1.12.14/util/cairo-gobject/Makefile.am	2010-08-26 06:57:19.000000000 -0500
++++ src/cairo-1.12.14/util/cairo-gobject/Makefile.am	2013-06-03 14:00:03.277661200 -0500
+@@ -9,7 +9,7 @@ libcairo_gobject_la_SOURCES = \
+ 	cairo-gobject-structs.c \
+ 	$(NULL)
+ 
+-libcairo_gobject_la_CFLAGS = $(CAIRO_CFLAGS) $(GOBJECT_CFLAGS)
++libcairo_gobject_la_CFLAGS = $(CAIRO_CFLAGS) $(GOBJECT_CFLAGS) -fno-lto
+ libcairo_gobject_la_LDFLAGS = -version-info $(CAIRO_LIBTOOL_VERSION_INFO) -no-undefined $(export_symbols)
+ libcairo_gobject_la_LIBADD = $(top_builddir)/src/libcairo.la $(CAIRO_LIBS) $(GOBJECT_LIBS)
+ 

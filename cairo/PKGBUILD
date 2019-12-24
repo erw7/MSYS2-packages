@@ -1,0 +1,61 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=cairo
+pkgver=1.16.0
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL MPL)
+url="https://cairographics.org/"
+pkgdesc="2D graphics library with support for multiple output devices"
+depends=('libpng' 'libxrender' 'fontconfig' 'pixman' 'glib2' 'liblzo2')
+makedepends=('libxrender-devel' 'glib2-devel' 'liblzo2-devel')
+source=("https://www.cairographics.org/releases/${pkgname}-${pkgver}.tar.xz"
+        "0001-Set-default-LCD-filter-to-FreeType-s-default.patch"
+        "0001-ft-Use-FT_Done_MM_Var-instead-of-free-when-available.patch"
+        "cairo-composite_color_glyphs.patch"
+        "1.12.14-cairo-gobject-lto.patch")
+sha256sums=('5e7b29b3f113ef870d1e3ecf8adf21f923396401604bda16d44be45e66052331'
+            '9d5fd80a4696d564848345ef45cf42893c6bef4dfe409bfcc26652f13c7a1240'
+            '9f8fc569df6a3833911ede061cc869fd01b41a5a008c46367d3d9426ec68e9de'
+            '14891f0d10af94e86ad07dc13763949a681ee13f75adcfc37d822d43525aa353'
+            'd1484571faaa5564f6d23a1ae3f4c80b8222bc2f4b9a09d33fe03fd97c3702b5')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/0001-Set-default-LCD-filter-to-FreeType-s-default.patch
+  patch -p1 -i ${srcdir}/0001-ft-Use-FT_Done_MM_Var-instead-of-free-when-available.patch
+  patch -p1 -i ${srcdir}/cairo-composite_color_glyphs.patch
+  patch -p2 -i ${srcdir}/1.12.14-cairo-gobject-lto.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --disable-directfb \
+  --enable-fc \
+  --enable-ft \
+  --disable-gl \
+  --enable-gobject \
+  --enable-interpreter \
+  --enable-png \
+  --enable-pdf \
+  --enable-ps \
+  --enable-pthread \
+  --disable-quartz \
+  --enable-script \
+  --enable-svg \
+  --disable-win32 \
+  --enable-xcb \
+  --enable-xcb-shm \
+  --enable-xlib \
+  --enable-xlib-xrender
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}
