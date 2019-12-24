@@ -1,0 +1,11 @@
+--- a/tests/vm/CMakeLists.txt
++++ b/tests/vm/CMakeLists.txt
+@@ -11,7 +11,7 @@ add_library(vm-test-common STATIC
+ # models rather than linking against the library from source.
+ add_library(vm-test-common STATIC 
+     basic_test.cpp)
+-target_link_libraries(vm-test-common graphite2 graphite2-segcache graphite2-base)
++target_link_libraries(vm-test-common graphite2-segcache graphite2-base graphite2)
+ add_definitions(-DGRAPHITE2_NTRACING)
+ 
+ if  (${CMAKE_COMPILER_IS_GNUCXX})

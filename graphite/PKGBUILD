@@ -1,0 +1,45 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=graphite
+pkgver=1.3.8
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL GPL custom)
+url="https://github.com/silnrsi/graphite"
+pkgdesc="reimplementation of the SIL Graphite text processing engine"
+depends=('gcc-libs')
+makedepends=('cmake' 'freetype2' 'ninja')
+source=("https://github.com/silnrsi/graphite/releases/download/${pkgver}/graphite2-${pkgver}.tgz"
+        "01-cygwin.patch"
+        "02-as-needed.patch"
+        "03-cmakepath.patch")
+md5sums=('236d2cb1f831fe33083112afbb555f0e'
+         'db3a89b95bc9fa517562be18a6a84426'
+         '1c60aeff88810b5acfd576a62f25a076'
+         '2ffe5aae20e0060a1ba914215b9ef8b1')
+
+prepare() {
+  cd ${pkgname}2-${pkgver}
+  patch -p2 -i ${srcdir}/01-cygwin.patch
+  patch -p1 -i ${srcdir}/02-as-needed.patch
+  patch -p2 -i ${srcdir}/03-cmakepath.patch
+}
+
+build() {
+  mkdir build
+  cd build
+  cmake -G Ninja ../graphite2-${pkgver} \
+        -DCMAKE_C_FLAGS:STRING="${CFLAGS}" \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE:STRING=Relase \
+        -DGRAPHITE2_COMPARE_RENDERER=OFF
+  ninja
+}
+
+package() {
+  cd ${srcdir}/build
+  DESTDIR=${pkgdir} ninja install
+
+  install -Dm644 ${srcdir}/graphite2-${pkgver}/COPYING \
+    -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}

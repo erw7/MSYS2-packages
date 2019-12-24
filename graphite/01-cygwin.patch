@@ -1,0 +1,22 @@
+--- origsrc/graphite2-1.1.3/gr2fonttest/CMakeLists.txt	2012-05-30 05:17:49.000000000 -0500
++++ src/graphite2-1.1.3/gr2fonttest/CMakeLists.txt	2012-09-10 18:15:03.301226600 -0500
+@@ -24,7 +24,7 @@ endif  (${CMAKE_SYSTEM_NAME} STREQUAL "L
+ 
+ # copy the DLL so that gr2fonttest can find it
+ add_custom_target(${PROJECT_NAME}_copy_dll ALL 
+-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${graphite2_core_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}graphite2${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
++	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${graphite2_core_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_SHARED_LIBRARY_PREFIX}graphite2*${CMAKE_SHARED_LIBRARY_SUFFIX} ${PROJECT_BINARY_DIR}/${CMAKE_CFG_INTDIR})
+ 
+ add_dependencies(${PROJECT_NAME}_copy_dll graphite2 gr2fonttest)
+ 
+--- origsrc/graphite2-1.1.3/include/graphite2/Types.h	2012-05-30 05:17:49.000000000 -0500
++++ src/graphite2-1.1.3/include/graphite2/Types.h	2012-09-10 18:20:53.031918000 -0500
+@@ -41,7 +41,7 @@ enum gr_encform {
+ };
+ 
+ // Definitions for library publicly exported symbols
+-#if defined _WIN32 || defined __CYGWIN__
++#if defined _WIN32
+   #if defined GRAPHITE2_STATIC
+     #define GR2_API
+   #elif defined GRAPHITE2_EXPORTING
