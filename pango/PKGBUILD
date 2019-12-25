@@ -1,0 +1,37 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=pango
+pkgver=1.40.6
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL)
+url="https://www.pango.org/"
+pkgdesc="A library for layout and rendering of text"
+depends=(cairo libxft harfbuzz)
+makedepends=(glib2-devel libxft-devel libxrender-devel)
+source=("https://ftp.gnome.org/pub/gnome/sources/pango/1.40/${pkgname}-${pkgver}.tar.xz"
+        "0001-1.40.4-not-win32.patch"
+        "0002-msys-platform-win32.patch")
+md5sums=('507c6746fbf53fc9d48c577f1e265de3'
+         '539e636794590934fe5ea2f603f3021d'
+         '2c4d4ef102b632166ce491bae6b3b963')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p2 -i ${srcdir}/0001-1.40.4-not-win32.patch
+  patch -p1 -i ${srcdir}/0002-msys-platform-win32.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}

@@ -1,0 +1,11 @@
+--- pango-1.40.6/configure.ac.orig	2019-12-25 14:42:22.083734700 +0900
++++ pango-1.40.6/configure.ac	2019-12-11 18:14:00.080746200 +0900
+@@ -145,7 +145,7 @@
+ 
+ AC_MSG_CHECKING([for some Win32 platform])
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*)
++  *-*-mingw*|*-*-cygwin*|*-*-msys*)
+     pango_platform_win32=yes
+     ;;
+   *)

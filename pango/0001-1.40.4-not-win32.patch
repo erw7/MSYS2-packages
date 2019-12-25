@@ -1,0 +1,54 @@
+--- origsrc/pango-1.40.4/configure.ac	2017-02-27 14:03:54.000000000 -0600
++++ src/pango-1.40.4/configure.ac	2017-03-05 02:28:56.764573300 -0600
+@@ -261,7 +261,7 @@ have_win32=false
+ # The following doesn't work with autoconf-2.13, so we check $host instead
+ # AC_CHECK_LIB(gdi32, GetTextMetricsA@8, have_win32=true, : )
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*) have_win32=true ;;
++  *-*-mingw*) have_win32=true ;;
+ esac
+ AM_CONDITIONAL(HAVE_WIN32, $have_win32)
+ 
+@@ -513,11 +513,9 @@ dnl ************************************
+ # Note that -module isn't included here since automake needs to see it to know
+ # that something like pango-basic-fc.la is a valid libtool archive
+ #
+-LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO"
+-if test "$pango_platform_win32" = yes; then
++LIBRARY_LIBTOOL_OPTIONS="-version-info $VERSION_INFO -no-undefined"
++if test "$pango_os_win32" != yes; then
+     # We currently use .def files on Windows
+-    LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS -no-undefined"
+-else
+     # libtool option to control which symbols are exported
+     # right now, symbols starting with '_' are not exported
+     LIBRARY_LIBTOOL_OPTIONS="$LIBRARY_LIBTOOL_OPTIONS "'-export-symbols-regex "^pango_.*"'
+--- origsrc/pango-1.40.4/pango/Makefile.am	2017-02-13 09:54:27.000000000 -0600
++++ src/pango-1.40.4/pango/Makefile.am	2017-03-05 02:29:47.495119600 -0600
+@@ -55,7 +55,7 @@ libpango_1_0_la_LIBADD =		\
+ libpango_1_0_la_LIBADD += mini-fribidi/libmini-fribidi.la
+ libpango_1_0_la_DEPENDENCIES = mini-fribidi/libmini-fribidi.la
+ 
+-if PLATFORM_WIN32
++if OS_WIN32
+ libpango_1_0_la_LDFLAGS += -Wl,pango-win32-res.o
+ libpango_1_0_la_DEPENDENCIES += pango-win32-res.o
+ endif
+@@ -212,7 +212,7 @@ libpangoft2_1_0_la_SOURCES =   	\
+ 	pango-ot-tag.c
+ 
+ 
+-if PLATFORM_WIN32
++if OS_WIN32
+ libpangoft2_1_0_la_LDFLAGS += -Wl,pangoft2-win32-res.o
+ libpangoft2_1_0_la_DEPENDENCIES += pangoft2-win32-res.o
+ endif
+@@ -257,7 +257,7 @@ libpangoxft_1_0_la_DEPENDENCIES =		\
+ 	libpangoft2-$(PANGO_API_VERSION).la	\
+ 	libpango-$(PANGO_API_VERSION).la
+ 
+-if PLATFORM_WIN32
++if OS_WIN32
+ libpangoxft_1_0_la_LDFLAGS += -Wl,pangoxft-win32-res.o
+ libpangoxft_1_0_la_DEPENDENCIES += pangoxft-win32-res.o
+ endif
