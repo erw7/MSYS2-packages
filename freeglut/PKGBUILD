@@ -1,0 +1,34 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=freeglut
+pkgver=3.2.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('MIT')
+url="http://freeglut.sourceforge.net/"
+pkgdesc="Provides functionality for small OpenGL programs"
+depends=(libxi libxrandr mesa)
+source=("https://downloads.sourceforge.net/freeglut/${pkgname}-${pkgver}.tar.gz"
+        "0001-msys-use-mesa-libgl.patch")
+
+md5sums=('cd5c670c1086358598a6d4a9d166949d'
+         '9b6344b436f76051796366248c6354f4')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/0001-msys-use-mesa-libgl.patch
+}
+
+build() {
+  cmake -G Ninja -H${pkgname}-${pkgver} -Bbuild \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIB=lib \
+    -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+}
+
+package() {
+  DESTDIR=${pkgdir} cmake --build build --target install
+  ln -sr ${pkgdir}/usr/lib/pkgconfig/{glut,freeglut}.pc
+  install -Dm644 ${pkgname}-${pkgver}/COPYING -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
