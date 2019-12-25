@@ -1,0 +1,35 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=jasper
+pkgver=2.0.14
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom:JasPer2.0')
+url="https://www.ece.uvic.ca/~mdadams/jasper/"
+pkgdesc="Software-based implementation of the codec specified in the emerging JPEG-2000 Part-1 standard"
+depends=(libjpeg-turbo freeglut glu)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mdadams/jasper/archive/version-${pkgver}.tar.gz"
+        "0001-msys-use-mesa-libgl.patch")
+
+md5sums=('9ef0e943d5b2c364ae84974a753841b8'
+         'ceab00dd710668c393ededdc7f7e2459')
+
+prepare() {
+  cd ${pkgname}-version-${pkgver}
+  patch -p1 -i ${srcdir}/0001-msys-use-mesa-libgl.patch
+}
+
+build() {
+  cmake -G Ninja -H${pkgname}-version-${pkgver} -Bbuild \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIB=lib \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DJAS_ENABLE_OPNEGL=ON \
+    -DJAS_ENABLE_LIBJPEG=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR=${pkgdir} cmake --build build --target install
+  install -Dm644 ${pkgname}-version-${pkgver}/LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}

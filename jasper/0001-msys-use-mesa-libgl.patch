@@ -1,0 +1,14 @@
+--- jasper-2.0.14/CMakeLists.txt.orig	2019-12-25 19:01:27.136090100 +0900
++++ jasper-2.0.14/CMakeLists.txt	2019-12-25 19:02:12.004669700 +0900
+@@ -267,7 +267,11 @@
+ # Check for the OpenGL and GLUT libraries.
+ ################################################################################
+ 
++set(_SAVED_MSYS MSYS)
++set(MSYS 0)
+ find_package(OpenGL ${JAS_REQUIRED})
++set(MSYS _SAVED_MSYS)
++unset(_SAVED_MSYS)
+ message("JAS_ENABLE_OPENGL: ${JAS_ENABLE_OPENGL}")
+ message("OpenGL library found: ${OPENGL_FOUND}")
+ if (JAS_ENABLE_OPENGL AND OPENGL_FOUND)
