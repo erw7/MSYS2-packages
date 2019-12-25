@@ -1,0 +1,61 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libtiff
+pkgver=4.0.9
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="http://www.simplesystems.org/libtiff/"
+pkgdesc="Library for manipulation of TIFF images"
+depends=(freeglut jbigkit libjpeg-turbo liblzma mesa zlib)
+makedepends=(glu zlib-devel liblzma-devel)
+source=("https://download.osgeo.org/libtiff/tiff-${pkgver}.tar.gz"
+        "libtiff-am-version.patch"
+        "libtiff-make-check.patch"
+        "libtiff-3.9.2-cygwin.patch"
+        "libtiff-4.0.3-libport.patch"
+        "libtiff-4.0.3-soname.patch"
+        "libtiff-3.9.7-binmode.patch"
+        "libtiff-3.9.7-exeext.patch")
+md5sums=('54bad211279cc93eb4fca31ba9bfdc79'
+         '775e9f6f2c3a3925c1d2c3a87c9881a0'
+         'a475612af29aff640465047a89c29815'
+         '2662a6265062b79f25dcff5c9f996518'
+         '8595dec7a5b7e31b13b6ce8032228e50'
+         'a6b82b08c11f4ab686bce3a005702ca3'
+         'dd690017059b353b879a6285ff1c7313'
+         '963e7b66ac0374a272bbfe207c60e440')
+
+prepare() {
+  cd tiff-${pkgver}
+  patch -p1 -i ${srcdir}/libtiff-am-version.patch
+  patch -p1 -i ${srcdir}/libtiff-make-check.patch
+  patch -p2 -i ${srcdir}/libtiff-3.9.2-cygwin.patch
+  patch -p2 -i ${srcdir}/libtiff-4.0.3-libport.patch
+  patch -p2 -i ${srcdir}/libtiff-4.0.3-soname.patch
+  patch -p2 -i ${srcdir}/libtiff-3.9.7-binmode.patch
+  patch -p2 -i ${srcdir}/libtiff-3.9.7-exeext.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd tiff-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --enable-cxx \
+  --enable-jpeg \
+  --enable-zlib \
+  --with-x \
+  ac_cv_header_windows_h=no \
+  ac_cv_check_gl_libgl=lGL \
+  ac_cv_check_glu_libglu=lGLU
+  make
+}
+
+package() {
+  cd tiff-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 COPYRIGHT -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}

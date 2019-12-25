@@ -1,0 +1,20 @@
+--- origsrc/tiff-3.9.2/libtiff/tiffio.h	2008-12-31 19:10:43.000000000 -0500
++++ src/tiff-3.9.2/libtiff/tiffio.h	2009-12-23 11:38:52.106000000 -0500
+@@ -68,7 +68,7 @@ typedef int32 tsize_t;          /* i/o s
+ typedef void* tdata_t;          /* image data ref */
+ typedef uint32 toff_t;          /* file offset */
+ 
+-#if !defined(__WIN32__) && (defined(_WIN32) || defined(WIN32))
++#if !defined(__WIN32__) && (defined(_WIN32) || defined(WIN32)) && !defined(__CYGWIN__)
+ #define __WIN32__
+ #endif
+ 
+@@ -80,7 +80,7 @@ typedef uint32 toff_t;          /* file 
+  */
+ 
+ #if defined(_WINDOWS) || defined(__WIN32__) || defined(_Windows)
+-#  if !defined(__CYGWIN) && !defined(AVOID_WIN32_FILEIO) && !defined(USE_WIN32_FILEIO)
++#  if !defined(__CYGWIN__) && !defined(AVOID_WIN32_FILEIO) && !defined(USE_WIN32_FILEIO)
+ #    define AVOID_WIN32_FILEIO
+ #  endif
+ #endif

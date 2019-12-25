@@ -1,0 +1,22 @@
+--- origsrc/tiff-4.0.3/libtiff/Makefile.am	2014-06-17 16:22:52.469694200 -0500
++++ src/tiff-4.0.3/libtiff/Makefile.am	2014-06-17 16:22:24.000000000 -0500
+@@ -133,7 +133,7 @@ endif
+ if HAVE_LD_VERSION_SCRIPT
+ libtiffxx_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libtiffxx.map
+ endif
+-libtiffxx_la_LIBADD = $(LIBTIFF) $(LIBPORT)
++libtiffxx_la_LIBADD = $(LIBTIFF)
+ libtiffxx_la_DEPENDENCIES = libtiff.la
+ 
+ #
+--- origsrc/tiff-4.0.3/tools/Makefile.am	2014-06-17 16:22:52.473194700 -0500
++++ src/tiff-4.0.3/tools/Makefile.am	2014-06-17 16:22:24.000000000 -0500
+@@ -23,7 +23,7 @@
+ 
+ # Process this file with automake to produce Makefile.in.
+ 
+-LIBPORT = $(top_builddir)/port/libport.la
++LIBPORT =
+ LIBTIFF = $(top_builddir)/libtiff/libtiff.la
+ 
+ EXTRA_DIST = Makefile.vc

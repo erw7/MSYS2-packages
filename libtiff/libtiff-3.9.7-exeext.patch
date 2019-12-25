@@ -1,0 +1,10 @@
+--- origsrc/tiff-3.9.7/libtiff/Makefile.am	2013-04-24 01:23:28.617454900 -0400
++++ src/tiff-3.9.7/libtiff/Makefile.am	2013-04-24 01:23:36.050880000 -0400
+@@ -146,6 +146,6 @@ noinst_PROGRAMS = mkg3states
+ mkg3states_SOURCES = mkg3states.c tif_fax3.h
+ mkg3states_LDADD = $(LIBPORT)
+ 
+-faxtable: mkg3states
++faxtable: mkg3states$(EXEEXT)
+ 	(rm -f tif_fax3sm.c && ./mkg3states -b -c const tif_fax3sm.c)
+ 
