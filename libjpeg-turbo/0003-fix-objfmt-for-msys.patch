@@ -1,0 +1,11 @@
+--- libjpeg-turbo-1.5.3/acinclude.m4.orig	2019-12-25 15:10:45.938496900 +0900
++++ libjpeg-turbo-1.5.3/acinclude.m4	2019-12-25 15:11:08.375573800 +0900
+@@ -11,7 +11,7 @@
+ 
+ AC_MSG_CHECKING([for object file format of host system])
+ case "$host_os" in
+-  cygwin* | mingw* | pw32* | interix*)
++  cygwin* | msys* | mingw* | pw32* | interix*)
+     case "$host_cpu" in
+       x86_64)
+         objfmt='Win64-COFF'

@@ -1,0 +1,43 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libjpeg-turbo
+pkgver=1.5.3
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('custom')
+url="https://libjpeg-turbo.org/"
+pkgdesc="JPEG image codec with accelerated baseline compression and decompression"
+makedepends=(cmake nasm)
+source=("https://downloads.sourceforge.net/project/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+        "0001-libjpeg-turbo14-noinst.patch"
+        "0002-libjpeg-turbo-header-files.patch"
+        "0003-fix-objfmt-for-msys.patch")
+md5sums=('7c82f0f6a3130ec06b8a4d0b321cbca3'
+         '7c86ccec9c60f6fa1f3c0d76b94dba4c'
+         'bae97ba625cb91128353f6ec7a2b0553'
+         '21360f1fa88444e8e0bc5fca1db933f1')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/0001-libjpeg-turbo14-noinst.patch
+  patch -p1 -i ${srcdir}/0002-libjpeg-turbo-header-files.patch
+  patch -p1 -i ${srcdir}/0003-fix-objfmt-for-msys.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --with-jpeg8
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/LICENSE.md \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
