@@ -1,0 +1,48 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=jbigkit
+pkgver=2.0
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('GPL')
+url="https://www.cl.cam.ac.uk/~mgk25/jbigkit/"
+pkgdesc="Data compression library/utilities for bi-level high-resolution images"
+depends=()
+depends=('libxml2' 'glib2')
+source=("https://www.cl.cam.ac.uk/~mgk25/download/jbigkit-${pkgver}.tar.gz"
+        "jbigkit-2.0-warnings.patch"
+        "jbigkit-CVE-2013-6369.patch"
+        "2.0-build.patch"
+        "2.0-parallel-make.patch")
+md5sums=('3dd87f605abb1a97a22dc79d8b3e8f6c'
+         'e11754cb54a786e375c6dad532ed5962'
+         '2fec8dc4e5fd56d3ad192ca4d86f86e5'
+         '0da23ee941c2b22354cc3d4ece7544c9'
+         'ed3bc0eeaca946c4beab12a40fe6a7e6')
+
+prepare() {
+  cd ${pkgname}
+  patch -p1 -i ${srcdir}/jbigkit-2.0-warnings.patch
+  patch -p1 -i ${srcdir}/jbigkit-CVE-2013-6369.patch
+  patch -p2 -i ${srcdir}/2.0-build.patch
+  patch -p2 -i ${srcdir}/2.0-parallel-make.patch
+}
+
+build() {
+  cd ${pkgname}
+  make
+}
+
+package() {
+  cd ${pkgname}
+
+  install -Dm644 libjbig/libjbig{,85}.dll.a -t ${pkgdir}/usr/lib/
+  install -Dm644 libjbig/libjbig{,85}.a -t ${pkgdir}/usr/lib/
+  install -Dm644 libjbig/jbig{,85,_ar}.h -t ${pkgdir}/usr/include/
+
+  install -Dm644 pbmtools/*.1 -t ${pkgdir}/usr/share/man/man1/
+
+  install -Dm755 libjbig/msys-jbig*.dll -t ${pkgdir}/usr/bin/
+  install -Dm755 pbmtools/jbgtopbm{,85}.exe -t ${pkgdir}/usr/bin/
+  install -Dm755 pbmtools/pbmtojbg{,85}.exe -t ${pkgdir}/usr/bin/
+}

@@ -1,0 +1,28 @@
+--- origsrc/jbigkit/Makefile	2008-08-30 15:40:22.000000000 -0500
++++ src/jbigkit/Makefile	2014-06-17 15:17:12.757914300 -0500
+@@ -16,19 +16,19 @@ all: lib pbm
+ 	@echo "Enter 'make test' in order to start some automatic tests."
+ 
+ lib:
+-	(cd libjbig;  make "CC=$(CC)" "CFLAGS=$(CFLAGS)")
++	(cd libjbig;  $(MAKE) "CC=$(CC)" "CFLAGS=$(CFLAGS)")
+ 
+ pbm: lib
+-	(cd pbmtools; make "CC=$(CC)" "CFLAGS=$(CFLAGS)")
++	(cd pbmtools; $(MAKE) "CC=$(CC)" "CFLAGS=$(CFLAGS)")
+ 
+ test: lib pbm
+-	(cd libjbig;  make "CC=$(CC)" "CFLAGS=$(CFLAGS)" test)
+-	(cd pbmtools; make "CC=$(CC)" "CFLAGS=$(CFLAGS)" test)
++	(cd libjbig;  $(MAKE) "CC=$(CC)" "CFLAGS=$(CFLAGS)" test)
++	(cd pbmtools; $(MAKE) "CC=$(CC)" "CFLAGS=$(CFLAGS)" test)
+ 
+ clean:
+ 	rm -f *~ core
+-	(cd libjbig; make clean)
+-	(cd pbmtools; make clean)
++	(cd libjbig; $(MAKE) clean)
++	(cd pbmtools; $(MAKE) clean)
+ 
+ distribution: clean
+ 	rm -f libjbig/libjbig*.a
