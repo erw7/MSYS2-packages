@@ -1,0 +1,30 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=glu
+pkgver=9.0.0
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('LGPL')
+url="https://cgit.freedesktop.org/mesa/glu/"
+pkgdesc="Mesa OpenGL Utility library"
+depends=(mesa)
+source=("https://mesa.freedesktop.org/archive/${pkgname}/${pkgname}-${pkgver}.tar.bz2")
+md5sums=('be9249132ff49275461cf92039083030')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}
