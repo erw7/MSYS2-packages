@@ -1,0 +1,41 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=shared-mime-info
+pkgver=1.8
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('GPL2')
+url="https://www.freedesktop.org/wiki/Specifications/shared-mime-info-spec/"
+pkgdesc="Freedesktop.org Shared MIME Info"
+depends=('zlib')
+depends=('libxml2' 'glib2')
+makedepends=('libtool' 'gettext')
+source=("https://freedesktop.org/~hadess/${pkgname}-${pkgver}.tar.xz"
+        "0001-Remove-sub-classing-from-OO.o-mime-types.patch"
+        "0.90-category-chemical.patch"
+        "1.5-cygwin-exe.patch")
+md5sums=('f6dcadce764605552fc956563efa058c'
+         'c02608818de0f10c79ccccbcf130ac7e'
+         '04baec69b53b96023f52d55f3ef07f92'
+         'b6cb87ca0f541690198debcd650bb455')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/0001-Remove-sub-classing-from-OO.o-mime-types.patch
+  patch -p2 -i ${srcdir}/0.90-category-chemical.patch
+  patch -p2 -i ${srcdir}/1.5-cygwin-exe.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}

@@ -1,0 +1,10 @@
+--- origsrc/shared-mime-info-0.90/update-mime-database.c
++++ src/shared-mime-info-0.90/update-mime-database.c
+@@ -59,6 +59,7 @@
+ 	"x-content",
+ 	"x-epoc",
+ 	"x-scheme-handler",
++	"chemical",
+ };
+ 
+ /* Represents a MIME type */
