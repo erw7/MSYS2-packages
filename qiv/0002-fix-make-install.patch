@@ -1,0 +1,15 @@
+--- qiv-2.3.2/Makefile.orig	2017-11-04 03:26:56.000000000 +0900
++++ qiv-2.3.2/Makefile	2019-12-18 14:04:56.544140000 +0900
+@@ -149,9 +149,9 @@
+ 	  echo install -d -m 0755 $(PREFIX)/bin; \
+         fi
+ 	install -s -m 0755 $(PROGRAM) $(PREFIX)/bin
+-	@if [ ! -e $(PREFIX)/man/man1 ]; then \
+-	  echo install -d -m 0755 $(PREFIX)/man/man1; \
+-	  install -d -m 0755 $(PREFIX)/man/man1; \
++	@if [ ! -e $(PREFIX)/share/man/man1 ]; then \
++	  echo install -d -m 0755 $(PREFIX)/share/man/man1; \
++	  install -d -m 0755 $(PREFIX)/share/man/man1; \
+ 	fi
+ 	install -m 0644 $(PROGRAM).1 $(PREFIX)/share/man/man1
+ 	$(COMPRESS_PROG) $(PREFIX)/share/man/man1/$(PROGRAM).1

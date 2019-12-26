@@ -1,0 +1,35 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=qiv
+pkgver=2.3.2
+pkgrel=1
+pkgdesc="Quick Image Viewer (qiv) is a very small and fast GDK/Imlib image viewer"
+url="https://spiegl.de/qiv/"
+arch=('i686' 'x86_64')
+license=(GPL2)
+depends=(gtk2 imlib2 libexif lcms2)
+source=("https://spiegl.de/qiv/download/${pkgname}-${pkgver}.tgz"
+        "0001-use-gdk-pixbuf-get-formats.patch"
+        "0002-fix-make-install.patch")
+md5sums=('e64dd2cbd49f31264f60012e0138549b'
+         '59a6ab75599a38ee94059ee5e59ad8bc'
+         '78b20333750ad9cbf8fa51e8ba4b7dad')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p0 -i ${srcdir}/0001-use-gdk-pixbuf-get-formats.patch
+  patch -p1 -i ${srcdir}/0002-fix-make-install.patch
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make PREFIX=${pkgdir}/usr install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/README \
+    -t "${pkgdir}"/usr/share/doc/${pkgname}/
+}

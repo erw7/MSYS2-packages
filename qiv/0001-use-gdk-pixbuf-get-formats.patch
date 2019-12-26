@@ -1,0 +1,187 @@
+--- qiv.h.orig	2017-11-04 03:26:56.000000000 +0900
++++ qiv.h	2019-12-18 13:26:13.703905700 +0900
+@@ -168,7 +168,7 @@
+ extern int     vikeys;
+ extern int     trashbin;
+ 
+-extern const char   *helpstrs[], **helpkeys, *image_extensions[];
++extern const char   *helpstrs[], **helpkeys;
+ 
+ extern int user_screen;
+ 
+@@ -187,6 +187,7 @@
+ extern void qiv_exit(int);
+ extern void qiv_load_image();
+ extern void filter_images(int *images, char **image_names);
++extern GSList* get_image_extensions();
+ 
+ /* image.c */
+ 
+--- main.h.orig	2017-11-04 03:26:56.000000000 +0900
++++ main.h	2019-12-18 13:26:13.703905700 +0900
+@@ -153,55 +153,6 @@
+ 
+ /* Used for filtering */
+ 
+-const char *image_extensions[] = {
+-#ifdef EXTN_JPEG
+-    ".jpg",".jpeg", ".jpe",
+-#endif
+-#ifdef EXTN_GIF
+-    ".gif",
+-#endif
+-#ifdef EXTN_TIFF
+-    ".tif",".tiff",
+-#endif
+-#ifdef EXTN_XPM
+-    ".xpm",
+-#endif
+-#ifdef EXTN_PNG
+-    ".png",".pjpeg",
+-#endif
+-#ifdef EXTN_PPM
+-    ".ppm",
+-#endif
+-#ifdef EXTN_PNM
+-    ".pnm",
+-#endif
+-#ifdef EXTN_PGM
+-    ".pgm",  ".pbm",
+-#endif
+-#ifdef EXTN_PCX
+-    ".pcx",
+-#endif
+-#ifdef EXTN_BMP
+-    ".bmp",
+-#endif
+-#ifdef EXTN_EIM
+-    ".eim",
+-#endif
+-#ifdef EXTN_TGA
+-    ".tga",
+-#endif
+-#ifdef EXTN_ICO
+-    ".ico",
+-#endif
+-#ifdef EXTN_WMF
+-    ".wmf",
+-#endif
+-#ifdef EXTN_SVG
+-    ".svg",
+-#endif
+-    NULL
+-};
+-
+ #ifdef HAVE_MAGIC
+ const char *image_magic[] = {
+ #ifdef EXTN_JPEG
+--- main.c.orig	2017-11-04 03:26:56.000000000 +0900
++++ main.c	2019-12-18 13:28:35.380138800 +0900
+@@ -24,7 +24,7 @@
+ qiv_image main_img;
+ qiv_mgl   magnify_img; /* [lc] */
+ 
+-static int check_extension(const char *);
++static int check_extension(const char *, GSList*);
+ static void qiv_signal_usr1();
+ static void qiv_signal_usr2();
+ static gboolean qiv_handle_timer(gpointer);
+@@ -282,6 +282,7 @@
+ void filter_images(int *images, char **image_names)
+ {
+   int i = 0;
++  GSList *image_extensions = get_image_extensions();
+ #ifdef HAVE_MAGIC
+   magic_t cookie;
+ 
+@@ -290,7 +291,7 @@
+ #endif
+ 
+   while(i < *images) {
+-    if (check_extension(image_names[i])
++    if (check_extension(image_names[i], image_extensions)
+ #ifdef HAVE_MAGIC
+             || check_magic(cookie, image_names[i])
+ #endif
+@@ -307,6 +308,7 @@
+       --(*images);
+     }
+   }
++  g_slist_free_full(image_extensions, g_free);
+ #ifdef HAVE_MAGIC
+   magic_close(cookie);
+ #endif
+@@ -314,15 +316,40 @@
+     image_idx = 0;
+ }
+ 
+-static int check_extension(const char *name)
++GSList* get_image_extensions()
+ {
+-  char *extn = strrchr(name, '.');
+-  int i;
++  GSList* format_list = gdk_pixbuf_get_formats();
++  GSList* image_extensions = NULL;
++  GdkPixbufFormat *format;
++  int i = 0;
++
++  for (format = g_slist_nth_data(format_list, i); format;
++      format = g_slist_nth_data(format_list, ++i)){
++    gchar **exts = gdk_pixbuf_format_get_extensions(format);
++    int j;
++    for (j = 0; exts[j]; j++) {
++      image_extensions = g_slist_prepend(image_extensions, g_strdup(exts[j]));
++    }
++    g_strfreev(exts);
++  }
++  g_slist_free(format_list);
++  return g_slist_sort(image_extensions, (GCompareFunc)strcmp);
++}
+ 
+-  if (extn)
+-    for (i=0; image_extensions[i]; i++)
+-      if (strcasecmp(extn, image_extensions[i]) == 0)
++static int check_extension(const char *name, GSList* image_extensions)
++{
++  char *extn = strrchr(name, '.') + 1;
++  char *ext;
++  int i = 0;
++
++  if (extn && *extn) {
++    for (ext = g_slist_nth_data(image_extensions, i); ext;
++        ext = g_slist_nth_data(image_extensions, ++i)) {
++      if (strcasecmp(extn, ext) == 0) {
+         return 1;
++      }
++    }
++  }
+ 
+   return 0;
+ }
+--- utils.c.orig	2017-11-04 03:26:56.000000000 +0900
++++ utils.c	2019-12-18 13:26:13.719531800 +0900
+@@ -499,6 +499,8 @@
+ void show_help(char *name, int exit_status)
+ {
+     int i;
++    GSList *image_extensions;
++    char *ext;
+ 
+     g_print("qiv (Quick Image Viewer) v%s\n"
+ 	"Usage: qiv [options] files ...\n\n",
+@@ -570,8 +572,13 @@
+ 
+     g_print("\nValid image extensions:\nUse --no_filter/-n to disable");
+ 
+-    for (i=0; image_extensions[i]; i++)
+-	g_print("%s%s", (i%8) ? " " : "\n    ", image_extensions[i]);
++    image_extensions = get_image_extensions();
++    i = 0;
++    for (ext = g_slist_nth_data(image_extensions, i); ext;
++        ext = g_slist_nth_data(image_extensions, ++i)) {
++      g_print("%s%s", (i%8) ? " " : "\n    ", (gchar *)ext);
++    }
++    g_slist_free_full(image_extensions, g_free);
+     g_print("\n\n");
+ 
+     g_print("Homepage: http://qiv.spiegl.de/\n"
