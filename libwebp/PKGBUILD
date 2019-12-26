@@ -1,0 +1,37 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libwebp
+pkgver=0.6.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(BSD)
+pkgdesc="WebP library and conversion tools"
+url="https://developers.google.com/speed/webp/"
+depends=(libpng libjpeg-turbo libtiff giflib)
+makedepends=(freeglut mesa glu)
+source=("https://github.com/webmproject/libwebp/archive/v0.6.1.tar.gz")
+md5sums=('1c3099cd2656d0d80d3550ee29fc0f28')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --enable-libwebpmux \
+  --enable-libwebpdemux \
+  --enable-libwebpdecoder
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
