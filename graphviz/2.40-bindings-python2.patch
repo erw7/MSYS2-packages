@@ -1,0 +1,57 @@
+--- origsrc/graphviz-2.40.1/configure.ac	2017-03-06 01:34:03.338956700 -0600
++++ src/graphviz-2.40.1/configure.ac	2017-03-06 01:37:04.264039400 -0600
+@@ -1168,8 +1168,7 @@ else
+       else
+         PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
+         PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
+-#        PYTHON_LIBS="-lpython$PYTHON_VERSION_SHORT"
+-	PYTHON_LIBS="-undefined dynamic_lookup"
++        PYTHON_LIBS="-lpython$PYTHON_VERSION_SHORT"
+         PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
+@@ -1232,7 +1232,7 @@ else
+       else
+         PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
+         PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
+-        PYTHON23_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON23_LIBS="-lpython$PYTHON23_VERSION_SHORT"
+         PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
+@@ -1296,7 +1296,7 @@ else
+       else
+         PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
+         PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
+-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON24_LIBS="-lpython$PYTHON24_VERSION_SHORT"
+         PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
+@@ -1360,7 +1360,7 @@ else
+       else
+         PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
+         PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
+-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON25_LIBS="-lpython$PYTHON25_VERSION_SHORT"
+         PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
+@@ -1424,7 +1424,7 @@ else
+       else
+         PYTHON26_PREFIX=`$PYTHON26 -c "import sys; print sys.prefix"`
+         PYTHON26_INCLUDES=-I$PYTHON26_PREFIX/include/python$PYTHON26_VERSION_SHORT
+-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON26_LIBS="-lpython$PYTHON26_VERSION_SHORT"
+         PYTHON26_INSTALL_DIR="`$PYTHON26 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON26_INCLUDES"
+@@ -1488,7 +1488,7 @@ else
+       else
+         PYTHON27_PREFIX=`$PYTHON27 -c "import sys; print sys.prefix"`
+         PYTHON27_INCLUDES=-I$PYTHON27_PREFIX/include/python$PYTHON27_VERSION_SHORT
+-        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON27_LIBS="-lpython$PYTHON27_VERSION_SHORT"
+         PYTHON27_INSTALL_DIR="`$PYTHON27 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON27_INCLUDES"

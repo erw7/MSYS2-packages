@@ -1,0 +1,15 @@
+--- origsrc/graphviz-2.40.1/config/config_ruby.rb	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/config/config_ruby.rb	2017-03-06 01:36:35.952838600 -0600
+@@ -4,8 +4,10 @@ CONFIG = RbConfig::MAKEFILE_CONFIG
+ 
+ 
+ case ARGV[0]
+-when "archdir"
+-    puts RbConfig::expand(CONFIG["archdir"])
++when "rubyhdrdir"
++    puts RbConfig::expand(CONFIG["rubyhdrdir"]) || RbConfig::expand(CONFIG["archdir"])
++when "arch"
++    puts RbConfig::expand(CONFIG["arch"])
+ when "lib"
+     puts RbConfig::expand(CONFIG["libdir"])
+ when "vendorarchdir"

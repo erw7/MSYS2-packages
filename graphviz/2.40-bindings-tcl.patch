@@ -1,0 +1,134 @@
+--- origsrc/graphviz-2.40.1/tclpkg/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/tclpkg/Makefile.am	2017-03-06 01:39:23.741177900 -0600
+@@ -25,7 +25,7 @@ if WITH_TCL
+ pkgindex_DATA = pkgIndex.tcl
+ endif
+ 
+-SUBDIRS = tclstubs tclhandle gdtclft tcldot tclpathplan gv
++SUBDIRS = tclhandle gdtclft tcldot tclpathplan gv
+ 
+ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@
+ 	echo "# end" >end
+@@ -36,7 +36,7 @@ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGIND
+ # separate step, with soft failures, so that a developer can do:
+ #    ./configure --prefix=$HOME/graphviz; make; make install
+ # without root priviledges.
+-install-data-hook:
++install-bindings:
+ if WITH_LUA
+ 	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;
+ 	if test -w $(DESTDIR)@LUA_INSTALL_DIR@; then \
+--- origsrc/graphviz-2.40.1/tclpkg/gdtclft/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/tclpkg/gdtclft/Makefile.am	2017-03-06 01:39:59.317614200 -0600
+@@ -10,8 +10,6 @@ AM_CPPFLAGS = \
+ 	 -I$(top_srcdir) \
+ 	@GDLIB_CFLAGS@ @TCL_INCLUDES@
+ 
+-LIBS = @LIBS@ -lc
+-
+ AM_CFLAGS = @TCL_CFLAGS@
+ 
+ man = gdtclft.3tcl
+@@ -27,11 +25,11 @@ endif
+ 
+ libgdtclft_la_SOURCES = gdtclft.c
+ 
+-libgdtclft_la_LDFLAGS = -no-undefined
++libgdtclft_la_LDFLAGS = -module -avoid-version -no-undefined
+ 
+ if WITH_LIBGD
+ libgdtclft_la_LIBADD = \
+-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
++	$(TCL_STUB_LIB_SPEC) \
+ 	$(GDLIB_LIBS)
+ 
+ if WITH_TCL
+--- origsrc/graphviz-2.40.1/tclpkg/gv/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/tclpkg/gv/Makefile.am	2017-03-06 01:40:41.509417400 -0600
+@@ -13,8 +13,6 @@ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/lib/cdt \
+ 	-I$(top_srcdir)/lib/pathplan
+ 
+-LIBS = -lc
+-
+ BASESOURCES = gv.cpp gv.i gv_builtins.c
+ BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
+ 	$(top_builddir)/lib/cgraph/libcgraph.la \
+@@ -288,9 +286,9 @@ pkgtcldir = $(pkglibdir)/tcl
+ TCL_data = 
+ nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
+ libgv_tcl_la_SOURCES = $(BASESOURCES) gv_tcl_init.c
+-libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(BASELIBS) $(TCL_LIBS)
++libgv_tcl_la_LIBADD = $(TCL_STUB_LIB_SPEC) $(BASELIBS) $(TCL_LIBS)
+ libgv_tcl_la_LDFLAGS = -module -avoid-version
+-libgv_tcl_la_CPPFLAGS = $(BASECPPFLAGS) $(TCL_INCLUDES)
++libgv_tcl_la_CPPFLAGS = $(BASECPPFLAGS) $(TCL_CFLAGS) $(TCL_INCLUDES)
+ # $(TCL_data): gv_tcl.cpp
+ gv_tcl.cpp: gv.i
+ 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
+--- origsrc/graphviz-2.40.1/tclpkg/tcldot/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/tclpkg/tcldot/Makefile.am	2017-03-06 01:41:36.799489000 -0600
+@@ -20,8 +20,6 @@ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/lib/cdt \
+ 	-I$(top_srcdir)/lib/pathplan $(TCLHANDLE_INCLUDES) $(GDLIB_CFLAGS) $(TCL_INCLUDES)
+ 
+-LIBS = -lc
+-
+ AM_CFLAGS = $(TCL_CFLAGS)
+ 
+ man = tcldot.3tcl
+@@ -51,10 +49,10 @@ libtcldot_la_SOURCES = \
+ 	tcldot-io.c \
+ 	no_builtins.c $(GDTCLFT)
+ libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
+-libtcldot_la_LDFLAGS = -no-undefined 
++libtcldot_la_LDFLAGS = -module -avoid-version -no-undefined 
+ 
+ libtcldot_la_LIBADD = $(TCLHANDLE_LIBS) \
+-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
++	$(TCL_STUB_LIB_SPEC) \
+ 	$(top_builddir)/lib/cdt/libcdt.la \
+ 	$(top_builddir)/lib/cgraph/libcgraph.la \
+ 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
+@@ -77,7 +77,7 @@ libtcldot_builtin_la_SOURCES = \
+ 	tcldot-io.c \
+ 	tcldot_builtins.c $(GDTCLFT)
+ libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
+-libtcldot_builtin_la_LDFLAGS =
++libtcldot_builtin_la_LDFLAGS = -module -avoid-version -no-undefined
+ 
+ libtcldot_builtin_la_LIBADD = $(TCLHANDLE_LIBS) \
+ 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
+@@ -89,7 +87,7 @@ libtcldot_builtin_la_LIBADD = $(TCLHANDL
+ 	$(top_builddir)/lib/cgraph/libcgraph_C.la \
+ 	$(top_builddir)/lib/cdt/libcdt_C.la \
+ 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
+-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(GTS_LIBS)
++	$(TCL_STUB_LIB_SPEC) $(GTS_LIBS)
+ 
+ if WITH_PANGOCAIRO
+ libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS)
+@@ -97,7 +95,7 @@ endif
+ 
+ if WITH_LIBGD
+ libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/gd/libgvplugin_gd_C.la
+-libtcldot_builtin_la_LIBADD += $(GD_LIBS)
++libtcldot_builtin_la_LIBADD += $(GDLIB_LIBS)
+ endif
+ 
+ libtcldot_builtin_la_LIBADD += $(EXPAT_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+--- origsrc/graphviz-2.40.1/tclpkg/tclpathplan/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/tclpkg/tclpathplan/Makefile.am	2017-03-06 01:42:07.076060300 -0600
+@@ -18,10 +18,10 @@ pkgtcl_LTLIBRARIES = libtclplan.la
+ endif
+ 
+ libtclplan_la_SOURCES = find_ints.c intersect.c makecw.c tclpathplan.c wrapper.c
+-libtclplan_la_LDFLAGS = -no-undefined
++libtclplan_la_LDFLAGS = -module -avoid-version -no-undefined
+ libtclplan_la_LIBADD = \
+ 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
++	$(TCL_STUB_LIB_SPEC) \
+ 	$(top_builddir)/lib/pathplan/libpathplan.la $(MATH_LIBS)
+ 
+ if WITH_TCL

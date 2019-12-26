@@ -1,0 +1,73 @@
+--- origsrc/graphviz-2.40.1/Doxyfile.in	2016-08-09 16:02:09.000000000 -0500
++++ src/graphviz-2.40.1/Doxyfile.in	2017-03-06 01:35:49.734028600 -0600
+@@ -568,38 +568,38 @@ WARN_LOGFILE           =
+ # directories like "/usr/src/myproject". Separate the files or directories
+ # with spaces.
+ 
+-INPUT                  = cmd/dot \
+-                         lib/cdt \
+-                         lib/cgraph \
+-                         lib/circogen \
+-                         lib/common \
+-                         lib/dotgen \
+-                         lib/fdpgen \
+-                         lib/gvc \
+-                         lib/neatogen \
+-                         lib/osage \
+-                         lib/pack \
+-                         lib/patchwork \
+-                         lib/pathplan \
+-                         lib/rbtree \
+-                         lib/sfdpgen \
+-			 lib/sparse \
+-                         lib/twopigen \
+-                         lib/xdot \
+-                         plugin/core \
+-                         plugin/devil \
+-                         plugin/gd \
+-                         plugin/gdk \
+-                         plugin/gtk \
+-                         plugin/lasi \
+-                         plugin/pango \
+-                         plugin/dot_layout \
+-                         plugin/neato_layout \
+-                         plugin/poppler \
+-                         plugin/rsvg \
+-                         plugin/xlib \
+-                         tclpkg/gv \
+-                         tclpkg/tcldot
++INPUT                  = @top_srcdir@/cmd/dot \
++                         @top_srcdir@/lib/cdt \
++                         @top_srcdir@/lib/cgraph \
++                         @top_srcdir@/lib/circogen \
++                         @top_srcdir@/lib/common \
++                         @top_srcdir@/lib/dotgen \
++                         @top_srcdir@/lib/fdpgen \
++                         @top_srcdir@/lib/gvc \
++                         @top_srcdir@/lib/neatogen \
++                         @top_srcdir@/lib/osage \
++                         @top_srcdir@/lib/pack \
++                         @top_srcdir@/lib/patchwork \
++                         @top_srcdir@/lib/pathplan \
++                         @top_srcdir@/lib/rbtree \
++                         @top_srcdir@/lib/sfdpgen \
++			 @top_srcdir@/lib/sparse \
++                         @top_srcdir@/lib/twopigen \
++                         @top_srcdir@/lib/xdot \
++                         @top_srcdir@/plugin/core \
++                         @top_srcdir@/plugin/devil \
++                         @top_srcdir@/plugin/gd \
++                         @top_srcdir@/plugin/gdk \
++                         @top_srcdir@/plugin/gtk \
++                         @top_srcdir@/plugin/lasi \
++                         @top_srcdir@/plugin/pango \
++                         @top_srcdir@/plugin/dot_layout \
++                         @top_srcdir@/plugin/neato_layout \
++                         @top_srcdir@/plugin/poppler \
++                         @top_srcdir@/plugin/rsvg \
++                         @top_srcdir@/plugin/xlib \
++                         @top_srcdir@/tclpkg/gv \
++                         @top_srcdir@/tclpkg/tcldot
+ 
+ # This tag can be used to specify the character encoding of the source files
+ # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

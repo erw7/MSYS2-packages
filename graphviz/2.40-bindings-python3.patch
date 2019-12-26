@@ -1,0 +1,245 @@
+--- origsrc/graphviz-2.40.1/config/config_python.py	2016-08-09 17:02:10.000000000 -0400
++++ src/graphviz-2.40.1/config/config_python.py	2019-05-01 14:47:49.816026700 -0400
+@@ -1,12 +1,13 @@
++from __future__ import print_function
+ import sys
+ from distutils import sysconfig
+ 
+ if sys.argv[1] == "archlib":
+-    print sysconfig.get_python_lib(1,1)
++    print(sysconfig.get_python_lib(1,1))
+ elif sys.argv[1] == "lib":
+-    print sysconfig.get_python_lib(0,1)
++    print(sysconfig.get_python_lib(0,1))
+ elif sys.argv[1] == "archsitelib":
+-    print sysconfig.get_python_lib(1,0)
++    print(sysconfig.get_python_lib(1,0))
+ elif sys.argv[1] == "sitelib":
+-    print sysconfig.get_python_lib(0,0)
++    print(sysconfig.get_python_lib(0,0))
+ 
+--- origsrc/graphviz-2.40.1/configure.ac	2019-05-01 14:04:42.450747500 -0400
++++ src/graphviz-2.40.1/configure.ac	2019-05-01 15:11:08.131734200 -0400
+@@ -1550,7 +1550,7 @@ else
+ #        PYTHON34_INCLUDES=-I$PYTHON34_PREFIX/include/python$PYTHON34_VERSION_SHORT
+ # FIXME - whats the stupid "m" for?
+         PYTHON34_INCLUDES=-I/usr/include/python3.4m
+-        PYTHON34_LIBS="-lpython$PYTHON_VERSION_SHORT"
++        PYTHON34_LIBS="-lpython$PYTHON34_VERSION_SHORT"
+         PYTHON34_INSTALL_DIR="`$PYTHON34 $srcdir/config/config_python.py archsitelib`"
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PYTHON34_INCLUDES"
+@@ -1572,6 +1572,130 @@ fi
+ AM_CONDITIONAL(WITH_PYTHON34, [test "x$use_python34" = "xYes"])
+ 
+ dnl -----------------------------------
++dnl INCLUDES and LIBS for PYTHON36
++
++AC_ARG_ENABLE(python36,
++  [AS_HELP_STRING([--enable-python36=no],[python36 language bindings])],
++  [], [enable_python36=no])
++
++if test "x$enable_python36" != "xyes"; then
++  use_python36="No (disabled by default - for multiversion installs)"
++else
++  if test "x$use_swig" != "xYes"; then
++    use_python36="No (swig not available)"
++  else
++    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
++      use_python36="No (swig does not support -python option)"
++    else
++      AC_CHECK_PROG(PYTHON36,python3.6,python3.6)
++      if test "x$PYTHON36" = "x"; then
++        use_python36="No (python36 not available)"
++      else
++        PYTHON36_VERSION=`$PYTHON36 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
++        if test "x$PYTHON36_VERSION" = "x"; then
++          PYTHON36=
++        else
++          PYTHON36_VERSION_MAJOR=`echo $PYTHON36_VERSION | cut -d '.' -f 1`
++          PYTHON36_VERSION_MINOR=`echo $PYTHON36_VERSION | cut -d '.' -f 2`
++          PYTHON36_VERSION_SHORT=$PYTHON36_VERSION_MAJOR.$PYTHON36_VERSION_MINOR
++          if test $PYTHON36_VERSION_MAJOR -lt 3; then
++            if test $PYTHON36_VERSION_MINOR -lt 6; then
++	          PYTHON36=
++            fi
++          fi
++        fi
++      fi
++      if test "x$PYTHON36" = "x"; then
++	    use_python36="No (python36 is too old)"
++      else
++        PYTHON36_PREFIX=`$PYTHON3 -c "import sys; print sys.prefix"`
++#        PYTHON36_INCLUDES=-I$PYTHON36_PREFIX/include/python$PYTHON36_VERSION_SHORT
++# FIXME - whats the stupid "m" for?
++        PYTHON36_INCLUDES=-I/usr/include/python3.6m
++        PYTHON36_LIBS="-lpython$PYTHON36_VERSION_SHORT"
++        PYTHON36_INSTALL_DIR="`$PYTHON36 $srcdir/config/config_python.py archsitelib`"
++        save_CPPFLAGS=$CPPFLAGS
++        CPPFLAGS="$CPPFLAGS $PYTHON36_INCLUDES"
++        AC_CHECK_HEADER(Python.h,,[
++          use_python36="No (missing header)"
++          PYTHON36=
++        ])
++        CPPFLAGS=$save_CPPFLAGS
++	if test "x$PYTHON36" != "x"; then
++	  use_python36="Yes"
++          AC_SUBST([PYTHON36_INSTALL_DIR])
++          AC_SUBST([PYTHON36_INCLUDES])
++          AC_SUBST([PYTHON36_LIBS])
++        fi
++      fi
++    fi
++  fi
++fi
++AM_CONDITIONAL(WITH_PYTHON36, [test "x$use_python36" = "xYes"])
++
++dnl -----------------------------------
++dnl INCLUDES and LIBS for PYTHON37
++
++AC_ARG_ENABLE(python37,
++  [AS_HELP_STRING([--enable-python37=no],[python37 language bindings])],
++  [], [enable_python37=no])
++
++if test "x$enable_python37" != "xyes"; then
++  use_python37="No (disabled by default - for multiversion installs)"
++else
++  if test "x$use_swig" != "xYes"; then
++    use_python37="No (swig not available)"
++  else
++    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
++      use_python37="No (swig does not support -python option)"
++    else
++      AC_CHECK_PROG(PYTHON37,python3.7,python3.7)
++      if test "x$PYTHON37" = "x"; then
++        use_python37="No (python37 not available)"
++      else
++        PYTHON37_VERSION=`$PYTHON37 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
++        if test "x$PYTHON37_VERSION" = "x"; then
++          PYTHON37=
++        else
++          PYTHON37_VERSION_MAJOR=`echo $PYTHON37_VERSION | cut -d '.' -f 1`
++          PYTHON37_VERSION_MINOR=`echo $PYTHON37_VERSION | cut -d '.' -f 2`
++          PYTHON37_VERSION_SHORT=$PYTHON37_VERSION_MAJOR.$PYTHON37_VERSION_MINOR
++          if test $PYTHON37_VERSION_MAJOR -lt 3; then
++            if test $PYTHON37_VERSION_MINOR -lt 7; then
++	          PYTHON37=
++            fi
++          fi
++        fi
++      fi
++      if test "x$PYTHON37" = "x"; then
++	    use_python37="No (python37 is too old)"
++      else
++        PYTHON37_PREFIX=`$PYTHON3 -c "import sys; print sys.prefix"`
++#        PYTHON37_INCLUDES=-I$PYTHON37_PREFIX/include/python$PYTHON37_VERSION_SHORT
++# FIXME - whats the stupid "m" for?
++        PYTHON37_INCLUDES=-I/usr/include/python3.7m
++        PYTHON37_LIBS="-lpython$PYTHON37_VERSION_SHORT"
++        PYTHON37_INSTALL_DIR="`$PYTHON37 $srcdir/config/config_python.py archsitelib`"
++        save_CPPFLAGS=$CPPFLAGS
++        CPPFLAGS="$CPPFLAGS $PYTHON37_INCLUDES"
++        AC_CHECK_HEADER(Python.h,,[
++          use_python37="No (missing header)"
++          PYTHON37=
++        ])
++        CPPFLAGS=$save_CPPFLAGS
++	if test "x$PYTHON37" != "x"; then
++	  use_python37="Yes"
++          AC_SUBST([PYTHON37_INSTALL_DIR])
++          AC_SUBST([PYTHON37_INCLUDES])
++          AC_SUBST([PYTHON37_LIBS])
++        fi
++      fi
++    fi
++  fi
++fi
++AM_CONDITIONAL(WITH_PYTHON37, [test "x$use_python37" = "xYes"])
++
++dnl -----------------------------------
+ dnl INCLUDES and LIBS for R
+ 
+ AC_ARG_ENABLE(r,
+@@ -3332,6 +3456,8 @@ echo "  gv_python25:   $use_python25"
+ echo "  gv_python26:   $use_python26"
+ echo "  gv_python27:   $use_python27"
+ echo "  gv_python34:   $use_python34"
++echo "  gv_python36:   $use_python36"
++echo "  gv_python37:   $use_python37"
+ echo "  gv_R:          $use_r"
+ echo "  gv_ruby:       $use_ruby"
+ echo "  gv_tcl:        $use_gv_tcl"
+--- origsrc/graphviz-2.40.1/tclpkg/gv/Makefile.am	2019-05-01 14:04:42.193751600 -0400
++++ src/graphviz-2.40.1/tclpkg/gv/Makefile.am	2019-05-01 14:50:21.829280700 -0400
+@@ -260,6 +260,28 @@ libgv_python34_la_CPPFLAGS = $(BASECPPFL
+ gv_python34.cpp: gv.i
+ 	$(SWIG) -c++ -python -o gv_python34.cpp $(srcdir)/gv.i
+ 
++pkgpython36dir = $(pkglibdir)/python36
++PYTHON36_data = gv.py
++nodist_libgv_python36_la_SOURCES = gv_python36.cpp $(PYTHON36_data)
++libgv_python36_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
++libgv_python36_la_LIBADD = $(BASELIBS) $(PYTHON36_LIBS)
++libgv_python36_la_LDFLAGS = -module -avoid-version
++libgv_python36_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON36_INCLUDES)
++# $(PYTHON36_data): gv_python36.cpp
++gv_python36.cpp: gv.i
++	$(SWIG) -c++ -python -o gv_python36.cpp $(srcdir)/gv.i
++
++pkgpython37dir = $(pkglibdir)/python37
++PYTHON37_data = gv.py
++nodist_libgv_python37_la_SOURCES = gv_python37.cpp $(PYTHON37_data)
++libgv_python37_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
++libgv_python37_la_LIBADD = $(BASELIBS) $(PYTHON37_LIBS)
++libgv_python37_la_LDFLAGS = -module -avoid-version
++libgv_python37_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON37_INCLUDES)
++# $(PYTHON37_data): gv_python37.cpp
++gv_python37.cpp: gv.i
++	$(SWIG) -c++ -python -o gv_python37.cpp $(srcdir)/gv.i
++
+ pkgRdir = $(pkglibdir)/R
+ R_data = 
+ nodist_libgv_R_la_SOURCES = gv_R.cpp $(R_data)
+@@ -411,6 +433,20 @@ py_data = gv.3python.pdf
+ pkgpython34_LTLIBRARIES = libgv_python34.la
+ #DEVTSTS += test_python34
+ endif
++if WITH_PYTHON36
++pkgpython36_DATA = $(PYTHON36_data)
++py_mans = gv.3python
++py_data = gv.3python.pdf
++pkgpython36_LTLIBRARIES = libgv_python36.la
++#DEVTSTS += test_python36
++endif
++if WITH_PYTHON37
++pkgpython37_DATA = $(PYTHON37_data)
++py_mans = gv.3python
++py_data = gv.3python.pdf
++pkgpython37_LTLIBRARIES = libgv_python37.la
++#DEVTSTS += test_python37
++endif
+ man_MANS += $(py_mans)
+ pdf_DATA += $(py_data)
+ if WITH_R
+@@ -525,6 +561,12 @@ endif
+ if WITH_PYTHON34
+ 	(cd $(DESTDIR)$(pkgpython34dir); rm -f _gv.so; $(LN_S) libgv_python34.so _gv.so;)
+ endif
++if WITH_PYTHON36
++	(cd $(DESTDIR)$(pkgpython36dir); rm -f _gv.so; $(LN_S) libgv_python36.so _gv.so;)
++endif
++if WITH_PYTHON37
++	(cd $(DESTDIR)$(pkgpython37dir); rm -f _gv.so; $(LN_S) libgv_python37.so _gv.so;)
++endif
+ if WITH_R
+ 	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;  $(LN_S) libgv_R.so gv.so;)
+ endif
+@@ -652,6 +694,8 @@ CLEANFILES = test_*/* pkgIndex.tcl \
+ 	gv_python26.cpp $(PYTHON26_data) gv.pyc \
+ 	gv_python27.cpp $(PYTHON27_data) gv.pyc \
+ 	gv_python34.cpp $(PYTHON34_data) gv.pyc \
++	gv_python36.cpp $(PYTHON36_data) gv.pyc \
++	gv_python37.cpp $(PYTHON37_data) gv.pyc \
+ 	gv_R.cpp $(R_data) \
+ 	gv_ruby.cpp $(RUBY_data) \
+ 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl

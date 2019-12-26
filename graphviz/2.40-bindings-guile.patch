@@ -1,0 +1,24 @@
+--- origsrc/graphviz-2.40.1/configure.ac	2019-05-01 15:14:56.316467100 -0400
++++ src/graphviz-2.40.1/configure.ac	2019-05-01 15:55:09.958861500 -0400
+@@ -703,13 +703,18 @@ else
+ 	  GUILE_LIBS=$(guile-config link)
+ 	  # don't die if PKG_CHECK_MODULES not available - el4, el5
+           PKG_CHECK_MODULES([GUILE],
+-		[guile-2.0 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
++		[guile-2.2 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
+ 		GUILE_INCLUDES="$GUILE_CFLAGS",
+           	[
+ 			PKG_CHECK_MODULES([GUILE],
+-			[guile-1.8 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
++			[guile-2.0 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
+ 			GUILE_INCLUDES="$GUILE_CFLAGS",
+-			false)
++	          	[
++				PKG_CHECK_MODULES([GUILE],
++				[guile-1.8 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
++				GUILE_INCLUDES="$GUILE_CFLAGS",
++				false)
++			])
+ 		])
+           ac_save_CFLAGS="$CFLAGS"
+           ac_save_CPPFLAGS="$save_CPPFLAGS"

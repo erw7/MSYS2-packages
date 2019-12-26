@@ -1,0 +1,85 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=graphviz
+pkgver=2.40.1
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(EPL)
+url="https://www.graphviz.org/"
+pkgdesc="Graph visualization software"
+depends=(libltdl pango)
+makedepends=(libxslt)
+source=("https://graphviz.gitlab.io/pub/graphviz/stable/SOURCES/graphviz.tar.gz"
+        "graphviz-2.40.1-visio.patch"
+        "2.40-bindings-guile.patch"
+        "2.40-bindings-perl.patch"
+        "2.40-bindings-php.patch"
+        "2.40-bindings-python2.patch"
+        "2.40-bindings-python3.patch"
+        "2.40-bindings-ruby.patch"
+        "2.40-bindings-tcl.patch"
+        "2.40-cygwin-unix.patch"
+        "2.40-doxygen-vpath.patch"
+        "2.40-no-undefined.patch"
+        "2.40-vmalloc.patch")
+md5sums=('4ea6fd64603536406166600bcc296fc8'
+         'f8f9829f0d5d9c8e7f2cba1f2bcd8be3'
+         '85a6038d19b61704c024d34310087bca'
+         '2fc773e8b119c9f2e2df086e69928f83'
+         'b6b01ba6187025f1dfe4c20e1653cf5b'
+         'fabc77d49f3031135230f2a092686072'
+         'b81fe7e0b4057505e0143defa4a087e6'
+         '8f406f6d360edc6cf6075232582df24a'
+         '82d8d25be658b9c3dceaec189942b662'
+         '4e78869399f2dcc077c47dbbbd862af0'
+         '6bab3d140f91953d47d0908c30f91bc5'
+         '070e0b695b1db6ff4c613118f70f6b75'
+         'c3cdb067c2a158aa6698cbfe4e9ce0e1')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p1 -i ${srcdir}/graphviz-2.40.1-visio.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-guile.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-perl.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-php.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-python2.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-python3.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-ruby.patch
+  patch -p2 -i ${srcdir}/2.40-bindings-tcl.patch
+  patch -p2 -i ${srcdir}/2.40-cygwin-unix.patch
+  patch -p2 -i ${srcdir}/2.40-doxygen-vpath.patch
+  patch -p2 -i ${srcdir}/2.40-no-undefined.patch
+  patch -p2 -i ${srcdir}/2.40-vmalloc.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --disable-rpath \
+    --without-devil \
+    --without-glade \
+    --without-gtkgl \
+    --without-gtkglext \
+    --disable-guile \
+    --disable-java \
+    --disable-lua \
+    --disable-ocaml \
+    --disable-perl \
+    --disable-php \
+    --disable-python27 \
+    --disable-python36 \
+    --disable-python37 \
+    --disable-r \
+    --disable-ruby \
+    --disable-sharp \
+    --disable-tcl
+    make LDFLAGS+=' -no-undefined'
+}
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}

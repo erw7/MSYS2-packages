@@ -1,0 +1,25 @@
+--- origsrc/graphviz-2.40.1/lib/vmalloc/features/vmalloc	2016-12-07 23:43:20.000000000 -0600
++++ src/graphviz-2.40.1/lib/vmalloc/features/vmalloc	2017-03-06 01:45:46.545394400 -0600
+@@ -16,17 +16,18 @@ lib mallinfo
+ lib mstats
+ hdr dlfcn
+ 
+-std	malloc note{ stuck with standard malloc }end noexecute{
++std	malloc note{ stuck with standard malloc }end execute{
+ 	_BEGIN_EXTERNS_
+ 	extern void _exit(int);
+ 	extern char* strdup(const char*);
++	static int stuck_with_malloc = 0;
+ 	#if _STD_
+-	char* malloc(unsigned n) { _exit(0); return 0; }
++	char* malloc(unsigned n) { stuck_with_malloc = 1; return 0; }
+ 	#else
+-	char* malloc(n) unsigned n; { _exit(0); return 0; }
++	char* malloc(n) unsigned n; { stuck_with_malloc = 1; return 0; }
+ 	#endif
+ 	_END_EXTERNS_
+-	main() { strdup("yo"); _exit(1); }
++	main() { strdup("yo"); _exit(stuck_with_malloc); }
+ }end
+ 
+ stk down note{ stack grows downward }end execute{

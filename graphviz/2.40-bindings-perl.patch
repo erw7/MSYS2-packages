@@ -1,0 +1,11 @@
+--- origsrc/graphviz-2.40.1/config/config_perl.pl	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/config/config_perl.pl	2017-03-06 01:36:11.253928700 -0600
+@@ -4,7 +4,7 @@ if ($ARGV[0] eq "PERL_LIBS") {
+ 	$archlib = $Config{archlib};
+ 	$libperl = $Config{libperl};
+ 	$libperl =~ s/lib([^\.]+).*/$1/;
+-	print "-L$archlib/CORE -l$libperl";
++	print "-L$archlib/CORE -lperl -lssp";
+ }
+ if ($ARGV[0] eq "PERL_INCLUDES") {
+ 	$archlib = $Config{archlib};

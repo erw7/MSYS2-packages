@@ -1,0 +1,28 @@
+--- origsrc/graphviz-2.40.1/cmd/tools/Makefile.am	2016-12-20 08:32:22.000000000 -0600
++++ src/graphviz-2.40.1/cmd/tools/Makefile.am	2017-03-06 01:28:01.526707900 -0600
+@@ -153,11 +153,12 @@ gvpack_SOURCES = gvpack.c
+ gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
+ 
+ gvpack_LDADD = \
+-	$(top_builddir)/lib/gvc/libgvc.la \
++	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
+ 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
++	$(top_builddir)/lib/gvc/libgvc.la \
+ 	$(top_builddir)/lib/cgraph/libcgraph.la \
+ 	$(top_builddir)/lib/cdt/libcdt.la \
+-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
++	$(GTS_LIBS)
+ 
+ if ENABLE_STATIC
+ gvpack_static_SOURCES = gvpack.c
+--- origsrc/graphviz-2.40.1/plugin/gtk/Makefile.am	2016-08-09 16:02:10.000000000 -0500
++++ src/graphviz-2.40.1/plugin/gtk/Makefile.am	2017-03-06 12:17:16.552948100 -0600
+@@ -31,7 +31,7 @@ libgvplugin_gtk_C_la_SOURCES = \
+ 
+ libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+ libgvplugin_gtk_la_SOURCES = $(libgvplugin_gtk_C_la_SOURCES)
+-libgvplugin_gtk_la_LIBADD = $(GTK_LIBS)
++libgvplugin_gtk_la_LIBADD = $(GTK_LIBS) $(XRENDER_LIBS)
+ 
+ if WITH_WIN32
+ libgvplugin_gtk_la_LDFLAGS += -no-undefined

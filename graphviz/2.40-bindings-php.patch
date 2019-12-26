@@ -1,0 +1,11 @@
+--- origsrc/graphviz-2.40.1/configure.ac	2017-03-06 01:34:03.338956700 -0600
++++ src/graphviz-2.40.1/configure.ac	2017-03-06 01:37:04.264039400 -0600
+@@ -1103,7 +1103,7 @@ else
+         fi
+         PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
+         PHP_INSTALL_DATADIR="/usr/share/php"
+-        PHP_LIBS=
++        PHP_LIBS=-lphp7
+         save_CPPFLAGS=$CPPFLAGS
+         CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
+         AC_CHECK_HEADER(php.h,,[
