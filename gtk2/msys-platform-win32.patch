@@ -1,0 +1,11 @@
+--- gtk+-2.24.32/configure.ac.orig	2019-12-26 13:29:38.553654500 +0900
++++ gtk+-2.24.32/configure.ac	2019-12-26 13:29:58.065824500 +0900
+@@ -197,7 +197,7 @@
+ 
+ AC_MSG_CHECKING([for some Win32 platform])
+ case "$host" in
+-  *-*-mingw*|*-*-cygwin*)
++  *-*-mingw*|*-*-cygwin*|*-*-msys*)
+     platform_win32=yes
+     ;;
+   *)

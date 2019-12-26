@@ -1,0 +1,69 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=gtk2
+pkgver=2.24.32
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL)
+url="https://www.gtk.org/"
+pkgdesc="GObject-based multi-platform GUI toolkit (legacy)"
+depends=(atk cairo gdk-pixbuf2 pango libxcomposite libxcursor libxdamage
+         libxi libxinerama libxrandr shared-mime-info)
+install=gtk2.install
+source=("https://ftp.gnome.org/pub/gnome/sources/gtk+/2.24/gtk+-${pkgver}.tar.xz"
+        "system-python.patch"
+        "icon-padding.patch"
+        "tooltip-positioning.patch"
+        "window-dragging.patch"
+        "2.18.3-not-win32.patch"
+        "2.24.4-gtk-doc-117.patch"
+        "msys-platform-win32.patch"
+        "gtk2.install"
+        "gtk-query-immodules-2.0.hook")
+
+md5sums=('d5742aa42275203a499b59b4c382a784'
+         '2dad482a688e36bbe8e7aba864107232'
+         '5c6d42eb6651106f605c2ac9d92a3951'
+         '86159ea0934b25a7bbda9aa436ffc551'
+         'd27d01c43bb9cb1a4f00bf645671689b'
+         'be2c5cc21a127ba77a7cb251a6183e82'
+         '784ec7d327838aa774b938412d908165'
+         '9cfba971c6c153163229735ef03eb063'
+         '370d7874f145109cca48ed9b9a7d2824'
+         'f93e8fb4310dc4906cc74ad5cc88daac')
+
+prepare() {
+  cd gtk+-${pkgver}
+  patch -p1 -i ${srcdir}/system-python.patch
+  patch -p1 -i ${srcdir}/icon-padding.patch
+  patch -p1 -i ${srcdir}/tooltip-positioning.patch
+  patch -p1 -i ${srcdir}/window-dragging.patch
+  patch -p2 -i ${srcdir}/2.18.3-not-win32.patch
+  patch -p2 -i ${srcdir}/2.24.4-gtk-doc-117.patch
+  patch -p1 -i ${srcdir}/msys-platform-win32.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd gtk+-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --disable-glibtest \
+    --disable-explicit-deps \
+    --enable-man \
+    --enable-xkb \
+    --disable-visibility \
+    --with-gdktarget=x11 \
+    --with-xinput \
+    --with-included-immodules
+    make
+}
+
+package() {
+  cd gtk+-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 ${srcdir}/gtk-query-immodules-2.0.hook \
+    -t ${pkgdir}/usr/share/libalpm/hook/
+}

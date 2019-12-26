@@ -1,0 +1,210 @@
+--- origsrc/gtk+-2.18.3/gtk/fnmatch.c	2009-06-04 14:18:03.000000000 -0500
++++ src/gtk+-2.18.3/gtk/fnmatch.c	2009-10-25 17:05:14.809817100 -0500
+@@ -47,14 +47,14 @@ get_char (const char **str)
+   gunichar c = g_utf8_get_char (*str);
+   *str = g_utf8_next_char (*str);
+ 
+-#ifdef G_PLATFORM_WIN32
++#ifdef G_OS_WIN32
+   c = g_unichar_tolower (c);
+ #endif
+ 
+   return c;
+ }
+ 
+-#if defined(G_OS_WIN32) || defined(G_WITH_CYGWIN)
++#if defined(G_OS_WIN32)
+ #define DO_ESCAPE 0
+ #else  
+ #define DO_ESCAPE 1
+--- origsrc/gtk+-2.18.3/gtk/gtkfilesel.c	2009-10-09 00:00:44.000000000 -0500
++++ src/gtk+-2.18.3/gtk/gtkfilesel.c	2009-10-25 17:08:08.219719400 -0500
+@@ -45,12 +45,12 @@
+ #include <glib.h>		/* Include early to get G_OS_WIN32 etc */
+ #include <glib/gstdio.h>
+ 
+-#if defined(G_PLATFORM_WIN32)
++#if defined(G_OS_WIN32)
+ #include <ctype.h>
+ #define STRICT
+ #include <windows.h>
+ #undef STRICT
+-#endif /* G_PLATFORM_WIN32 */
++#endif /* G_OS_WIN32 */
+ 
+ #include "gdk/gdkkeysyms.h"
+ 
+@@ -151,7 +151,7 @@ typedef struct _PossibleCompletion Possi
+  */
+ struct _CompletionDirSent
+ {
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+   ino_t inode;
+   time_t mtime;
+   dev_t device;
+@@ -323,7 +323,7 @@ static gchar*              cmpl_completi
+ static CompletionDir* open_ref_dir         (gchar* text_to_complete,
+ 					    gchar** remaining_text,
+ 					    CompletionState* cmpl_state);
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+ static gboolean       check_dir            (gchar *dir_name, 
+ 					    struct stat *result, 
+ 					    gboolean *stat_subdirs);
+@@ -342,7 +342,7 @@ static CompletionDirSent* open_new_dir  
+ static gint           correct_dir_fullname (CompletionDir* cmpl_dir);
+ static gint           correct_parent       (CompletionDir* cmpl_dir,
+ 					    struct stat *sbuf);
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+ static gchar*         find_parent_dir_fullname    (gchar* dirname);
+ #endif
+ static CompletionDir* attach_dir           (CompletionDirSent* sent,
+@@ -419,7 +419,7 @@ static void gtk_file_selection_rename_fi
+ 
+ static void free_selected_names (GPtrArray *names);
+ 
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+ 
+ #define compare_utf8_filenames(a, b) strcmp(a, b)
+ #define compare_sys_filenames(a, b) strcmp(a, b)
+@@ -467,7 +467,7 @@ compare_sys_filenames (const gchar *a,
+ /* Saves errno when something cmpl does fails. */
+ static gint cmpl_errno;
+ 
+-#ifdef G_WITH_CYGWIN
++#if 0
+ /*
+  * Take the path currently in the file selection
+  * entry field and translate as necessary from
+@@ -1157,9 +1157,6 @@ gtk_file_selection_get_filename (GtkFile
+ 
+   g_return_val_if_fail (GTK_IS_FILE_SELECTION (filesel), nothing);
+ 
+-#ifdef G_WITH_CYGWIN
+-  translate_win32_path (filesel);
+-#endif
+   text = gtk_entry_get_text (GTK_ENTRY (filesel->selection_entry));
+   if (text)
+     {
+@@ -1514,10 +1511,6 @@ gtk_file_selection_delete_file (GtkWidge
+   if (fs->fileop_dialog)
+     return;
+ 
+-#ifdef G_WITH_CYGWIN
+-  translate_win32_path (fs);
+-#endif
+-
+   filename = gtk_entry_get_text (GTK_ENTRY (fs->selection_entry));
+   if (strlen (filename) < 1)
+     return;
+@@ -1767,9 +1760,6 @@ gtk_file_selection_key_press (GtkWidget 
+       (event->state & gtk_accelerator_get_default_mod_mask ()) == 0)
+     {
+       fs = GTK_FILE_SELECTION (user_data);
+-#ifdef G_WITH_CYGWIN
+-      translate_win32_path (fs);
+-#endif
+       text = g_strdup (gtk_entry_get_text (GTK_ENTRY (fs->selection_entry)));
+ 
+       gtk_file_selection_populate (fs, text, TRUE, TRUE);
+@@ -1892,7 +1882,7 @@ static gchar *
+ get_real_filename (gchar    *filename,
+                    gboolean  free_old)
+ {
+-#ifdef G_WITH_CYGWIN
++#if 0
+   /* Check to see if the selection was a drive selector */
+   if (isalpha (filename[0]) && (filename[1] == ':'))
+     {
+@@ -1956,7 +1946,7 @@ gtk_file_selection_dir_activate (GtkTree
+   g_free (filename);
+ }
+ 
+-#ifdef G_PLATFORM_WIN32
++#ifdef G_OS_WIN32
+ 
+ static void
+ win32_gtk_add_drives_to_dir_list (GtkListStore *model)
+@@ -2074,7 +2064,7 @@ gtk_file_selection_populate (GtkFileSele
+       poss = cmpl_next_completion (cmpl_state);
+     }
+ 
+-#ifdef G_PLATFORM_WIN32
++#ifdef G_OS_WIN32
+   /* For Windows, add drives as potential selections */
+   win32_gtk_add_drives_to_dir_list (dir_model);
+ #endif
+@@ -3000,7 +2990,7 @@ open_new_dir (gchar       *dir_name,
+   gchar *sys_dir_name;
+ 
+   sent = g_new (CompletionDirSent, 1);
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+   sent->mtime = sbuf->st_mtime;
+   sent->inode = sbuf->st_ino;
+   sent->device = sbuf->st_dev;
+@@ -3098,7 +3088,7 @@ open_new_dir (gchar       *dir_name,
+   return sent;
+ }
+ 
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+ 
+ static gboolean
+ check_dir (gchar       *dir_name,
+@@ -3171,14 +3161,14 @@ static CompletionDir*
+ open_dir (gchar           *dir_name,
+ 	  CompletionState *cmpl_state)
+ {
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+   struct stat sbuf;
+   gboolean stat_subdirs;
+   GList* cdsl;
+ #endif
+   CompletionDirSent *sent;
+ 
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+   if (!check_dir (dir_name, &sbuf, &stat_subdirs))
+     return NULL;
+ 
+@@ -3343,7 +3333,7 @@ correct_parent (CompletionDir *cmpl_dir,
+   struct stat parbuf;
+   gchar *last_slash;
+   gchar *first_slash;
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+   gchar *new_name;
+ #endif
+   gchar *sys_filename;
+@@ -3385,7 +3375,7 @@ correct_parent (CompletionDir *cmpl_dir,
+     }
+   g_free (sys_filename);
+ 
+-#ifndef G_PLATFORM_WIN32	/* No inode numbers on Win32 */
++#ifndef G_OS_WIN32	/* No inode numbers on Win32 */
+   if (parbuf.st_ino == sbuf->st_ino && parbuf.st_dev == sbuf->st_dev)
+     /* it wasn't a link */
+     return TRUE;
+@@ -3410,7 +3400,7 @@ correct_parent (CompletionDir *cmpl_dir,
+   return TRUE;
+ }
+ 
+-#ifndef G_PLATFORM_WIN32
++#ifndef G_OS_WIN32
+ 
+ static gchar*
+ find_parent_dir_fullname (gchar* dirname)
+@@ -3521,7 +3511,7 @@ attempt_homedir_completion (gchar       
+ 
+ #endif
+ 
+-#ifdef G_PLATFORM_WIN32
++#ifdef G_OS_WIN32
+ /* FIXME: determine whether we should casefold all Unicode letters
+  * here, too (and in in first_diff_index() walk through the strings with
+  * g_utf8_next_char()), or if this folding isn't actually needed at

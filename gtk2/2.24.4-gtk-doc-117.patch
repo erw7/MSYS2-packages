@@ -1,0 +1,11 @@
+--- origsrc/gtk+-2.24.4/docs/reference/gdk/Makefile.am	2011-02-19 08:31:37.000000000 -0600
++++ src/gtk+-2.24.4/docs/reference/gdk/Makefile.am	2011-04-06 03:52:05.020948400 -0500
+@@ -37,7 +37,7 @@ IGNORE_HFILES=			\
+ 
+ # Extra files to add when scanning (relative to $srcdir)
+ EXTRA_HFILES=			\
+-	../../../gdk/x11/gdkx.h 
++	$(top_srcdir)/gdk/x11/gdkx.h 
+ 
+ # CFLAGS and LDFLAGS for compiling scan program. Only needed
+ # if $(DOC_MODULE).types is non-empty.
