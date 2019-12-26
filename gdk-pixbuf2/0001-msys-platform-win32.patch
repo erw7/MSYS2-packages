@@ -1,0 +1,11 @@
+--- gdk-pixbuf-2.36.9/configure.ac.orig	2019-12-14 13:07:31.407416000 +0900
++++ gdk-pixbuf-2.36.9/configure.ac	2019-12-15 13:41:29.451940000 +0900
+@@ -152,7 +152,7 @@
+ 
+ AC_MSG_CHECKING([for some Win32 platform])
+ AS_CASE(["$host"],
+-        [*-*-mingw*|*-*-cygwin*], [platform_win32=yes],
++        [*-*-mingw*|*-*-cygwin*|*-*-msys*], [platform_win32=yes],
+         [platform_win32=no]
+ )
+ AC_MSG_RESULT([$platform_win32])
