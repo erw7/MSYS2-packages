@@ -1,0 +1,35 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libexif
+pkgver=0.6.21
+pkgrel=1
+pkgdesc="A library to parse an EXIF file and read the data from those tags"
+url="https://sourceforge.net/projects/libexif"
+arch=('i686' 'x86_64')
+license=(LGPL)
+source=("https://downloads.sourceforge.net/sourceforge/${pkgname}/${pkgname}-${pkgver}.tar.bz2"
+        "libexif-0.6.13-pkgconfig.patch"
+        "libexif-0.6.21-CVE-2016-6328.patch")
+md5sums=('27339b89850f28c8f1c237f233e05b27'
+         'ff7cc70c3d6b4c99042a46a704838db4'
+         '3afb73b2ab4ce58537ff1c7e68afe689')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/libexif-0.6.13-pkgconfig.patch
+  patch -p1 -i ${srcdir}/libexif-0.6.21-CVE-2016-6328.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}
