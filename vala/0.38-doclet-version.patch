@@ -1,0 +1,44 @@
+--- origsrc/vala-0.38.7/libvaladoc/Makefile.am	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/libvaladoc/Makefile.am	2018-02-11 18:19:23.002078500 -0600
+@@ -4,7 +4,7 @@ NULL =
+ 
+ AM_CFLAGS = \
+ 	-DPACKAGE_ICONDIR=\"$(datadir)/valadoc/icons/\" \
+-	-DPACKAGE_DATADIR=\"$(libdir)/valadoc\" \
++	-DPACKAGE_DATADIR=\"$(libdir)/valadoc$(PACKAGE_SUFFIX)\" \
+ 	-DPACKAGE_VERSION=\"$(VERSION)\" \
+ 	$(COVERAGE_CFLAGS) \
+ 	$(LIBGVC_CFLAGS) \
+--- origsrc/vala-0.38.7/valadoc/doclets/devhelp/Makefile.am	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/valadoc/doclets/devhelp/Makefile.am	2018-02-11 18:22:41.518741700 -0600
+@@ -16,7 +16,7 @@ BUILT_SOURCES = libdoclet.vala.stamp
+ 
+ doclet_LTLIBRARIES = libdoclet.la
+ 
+-docletdir = $(libdir)/valadoc/doclets/devhelp
++docletdir = $(libdir)/valadoc$(PACKAGE_SUFFIX)/doclets/devhelp
+ 
+ libdoclet_la_LDFLAGS = -module -avoid-version -no-undefined
+ 
+--- origsrc/vala-0.38.7/valadoc/doclets/gtkdoc/Makefile.am	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/valadoc/doclets/gtkdoc/Makefile.am	2018-02-11 18:22:49.534394500 -0600
+@@ -16,7 +16,7 @@ BUILT_SOURCES = libdoclet.vala.stamp
+ 
+ doclet_LTLIBRARIES = libdoclet.la
+ 
+-docletdir = $(libdir)/valadoc/doclets/gtkdoc
++docletdir = $(libdir)/valadoc$(PACKAGE_SUFFIX)/doclets/gtkdoc
+ 
+ libdoclet_la_LDFLAGS = -module -avoid-version -no-undefined
+ 
+--- origsrc/vala-0.38.7/valadoc/doclets/html/Makefile.am	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/valadoc/doclets/html/Makefile.am	2018-02-11 18:22:56.534418700 -0600
+@@ -16,7 +16,7 @@ BUILT_SOURCES = libdoclet.vala.stamp
+ 
+ doclet_LTLIBRARIES = libdoclet.la
+ 
+-docletdir = $(libdir)/valadoc/doclets/html
++docletdir = $(libdir)/valadoc$(PACKAGE_SUFFIX)/doclets/html
+ 
+ libdoclet_la_LDFLAGS = -module -avoid-version -no-undefined
+ 

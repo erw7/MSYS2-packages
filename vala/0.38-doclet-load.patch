@@ -1,0 +1,20 @@
+--- origsrc/vala-0.38.7/libvaladoc/moduleloader.vala	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/libvaladoc/moduleloader.vala	2018-02-11 17:55:28.290468500 -0600
+@@ -52,7 +52,7 @@ public class Valadoc.ModuleLoader : Obje
+ 	//
+ 
+ 	public static bool is_doclet (string path) {
+-		string library_path = Path.build_filename (path, "libdoclet." + Module.SUFFIX);
++		string library_path = Module.build_path (path, "doclet");
+ 		return FileUtils.test (path, FileTest.EXISTS) && FileUtils.test (library_path, FileTest.EXISTS);
+ 	}
+ 
+@@ -98,7 +98,7 @@ public class Valadoc.ModuleLoader : Obje
+ 		if (data == null) {
+ 			void* function;
+ 
+-			Module? module = Module.open (Module.build_path (path, "libdoclet"), ModuleFlags.BIND_LAZY | ModuleFlags.BIND_LOCAL);
++			Module? module = Module.open (Module.build_path (path, "doclet"), ModuleFlags.BIND_LAZY | ModuleFlags.BIND_LOCAL);
+ 			if (module == null) {
+ 				return null;
+ 			}

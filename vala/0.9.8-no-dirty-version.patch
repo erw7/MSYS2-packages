@@ -1,0 +1,15 @@
+This gets a false positive when built in a Ports git tree
+
+FIXME: make this conditional on [ -d .git ] ??
+
+--- origsrc/vala-0.9.8/build-aux/git-version-gen	2010-08-15 06:49:03.000000000 -0500
++++ src/vala-0.9.8/build-aux/git-version-gen	2010-09-13 03:48:27.529254300 -0500
+@@ -129,7 +129,7 @@ v=`echo "$v" |sed 's/^v//'`
+ # Don't declare a version "dirty" merely because a time stamp has changed.
+ git status > /dev/null 2>&1
+ 
+-dirty=`sh -c 'git diff-index --name-only HEAD' 2>/dev/null` || dirty=
++dirty=
+ case "$dirty" in
+     '') ;;
+     *) # Append the suffix only if there isn't one already.

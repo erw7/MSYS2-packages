@@ -1,0 +1,11 @@
+--- origsrc/vala-0.38.7/codegen/Makefile.am	2018-02-04 04:23:55.000000000 -0600
++++ src/vala-0.38.7/codegen/Makefile.am	2018-02-11 17:36:37.572986800 -0600
+@@ -20,6 +20,8 @@ libvalaccodegen_ladir = $(pkglibdir)
+ 
+ libvalaccodegen_la_LDFLAGS = \
+ 	-avoid-version \
++	-release $(API_VERSION) \
++	-no-undefined \
+ 	$(NULL)
+ 
+ libvalaccodegen_la_VALASOURCES = \

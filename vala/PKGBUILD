@@ -1,0 +1,51 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=vala
+pkgver=0.38.8
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL)
+url="https://wiki.gnome.org/Projects/Vala"
+pkgdesc="Compiler for the GObject type system"
+depends=(glib2 gtk-doc graphviz pkg-config)
+makedepends=(libxslt)
+source=("https://ftp.gnome.org/pub/gnome/sources/${pkgname}/0.38/${pkgname}-${pkgver}.tar.xz"
+        "0.7.7-testrunner.patch"
+        "0.9.8-no-dirty-version.patch"
+        "0.10.1-exeext.patch"
+        "0.38-doclet-load.patch"
+        "0.38-doclet-version.patch"
+        "0.38-no-undefined.patch")
+md5sums=('37edd0467d056fd9e3937d0bbceda80b'
+         'a632335be650416efe57a5acff25efc5'
+         '0e2f067572d631f026b143d4afd2baf6'
+         'fea24cb32df73640f886bec1616bc1d1'
+         'cdc4baf987a7c0a5a5eedb263a3761c6'
+         '590bf21c55fd9088511c07dd17b66a8a'
+         'c9d675a061099f584a6d1dff52fbc189')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p2 -i ${srcdir}/0.7.7-testrunner.patch
+  patch -p2 -i ${srcdir}/0.9.8-no-dirty-version.patch
+  patch -p2 -i ${srcdir}/0.10.1-exeext.patch
+  patch -p2 -i ${srcdir}/0.38-doclet-load.patch
+  patch -p2 -i ${srcdir}/0.38-doclet-version.patch
+  patch -p2 -i ${srcdir}/0.38-no-undefined.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST} \
+    --enable-vapigen
+    export PATH=${srcdir}/${pkgname}-${pkrver}/compiler:$PATH
+    make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}
