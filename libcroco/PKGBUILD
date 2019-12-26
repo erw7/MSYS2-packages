@@ -1,0 +1,34 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libcroco
+pkgver=0.6.9
+pkgrel=1
+arch=('i686' 'x86_64')
+license=(LGPL)
+url="https://gitlab.gnome.org/GNOME/libcroco"
+pkgdesc="A CSS parsing library"
+depends=(glib2 libxml2)
+makedepends=(glib2-devel libxml2-devel)
+source=("https://ftp.gnome.org/pub/gnome/sources/libcroco/0.6/${pkgname}-${pkgver}.tar.xz"
+        "0001-msys-platform-win32.patch")
+md5sums=('f1863da805c9206563da06f56da1ea55'
+         '910390d0e7fd5934d4d5bd6748d9e59a')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -p1 -i ${srcdir}/0001-msys-platform-win32.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --build=${CHOST}
+    make
+}
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  make DESTDIR=${pkgdir} install
+}

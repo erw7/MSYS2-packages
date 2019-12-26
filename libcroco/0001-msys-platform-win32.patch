@@ -1,0 +1,11 @@
+--- libcroco-0.6.9/configure.ac.orig	2019-12-26 12:47:39.685896800 +0900
++++ libcroco-0.6.9/configure.ac	2019-12-17 01:00:20.588688800 +0900
+@@ -52,7 +52,7 @@
+ AC_SUBST(CROCO_LIB)
+ 
+ case "$host" in
+-  *-*-cygwin*|*-*-mingw*)
++  *-*-cygwin*|*-*-mingw*|*-*-msys*)
+     platform_win32=yes
+     ;;
+   *)
