@@ -1,0 +1,121 @@
+--- origsrc/imlib2-1.4.8/src/lib/Makefile.am	2016-02-09 10:53:27.000000000 -0600
++++ src/imlib2-1.4.8/src/lib/Makefile.am	2016-04-19 01:02:38.835193300 -0500
+@@ -103,5 +103,5 @@ libImlib2_la_LIBADD       = $(MY_LIBS)
+ libImlib2_la_DEPENDENCIES = $(top_builddir)/config.h
+ endif
+ endif
+-libImlib2_la_LDFLAGS      = -version-info @lt_version@
++libImlib2_la_LDFLAGS      = -version-info @lt_version@ -no-undefined
+ 
+--- origsrc/imlib2-1.4.8/src/modules/filters/Makefile.am	2016-02-09 10:53:27.000000000 -0600
++++ src/imlib2-1.4.8/src/modules/filters/Makefile.am	2016-04-19 01:01:59.765732200 -0500
+@@ -9,17 +9,17 @@ pkg_LTLIBRARIES       = testfilter.la bu
+ EXTRA_DIST = filter_common.h
+ 
+ testfilter_la_SOURCES = filter_test.c
+-testfilter_la_LDFLAGS = -module -avoid-version
++testfilter_la_LDFLAGS = -module -avoid-version -no-undefined
+ testfilter_la_LIBADD  = $(top_builddir)/src/lib/libImlib2.la
+ testfilter_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ bumpmap_la_SOURCES    = filter_bumpmap.c
+-bumpmap_la_LDFLAGS    = -module -avoid-version
++bumpmap_la_LDFLAGS    = -module -avoid-version -no-undefined
+ bumpmap_la_LIBADD     = $(top_builddir)/src/lib/libImlib2.la -lm
+ bumpmap_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ colormod_la_SOURCES   = filter_colormod.c
+-colormod_la_LDFLAGS   = -module -avoid-version
++colormod_la_LDFLAGS   = -module -avoid-version -no-undefined
+ colormod_la_LIBADD    = $(top_builddir)/src/lib/libImlib2.la
+ colormod_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+--- origsrc/imlib2-1.4.8/src/modules/loaders/Makefile.am	2016-02-07 01:01:40.000000000 -0600
++++ src/imlib2-1.4.8/src/modules/loaders/Makefile.am	2016-04-19 01:02:22.966678300 -0500
+@@ -47,72 +47,72 @@ lbm.la
+ EXTRA_DIST = loader_common.h
+ 
+ jpeg_la_SOURCES      = loader_jpeg.c
+-jpeg_la_LDFLAGS      = -module -avoid-version
++jpeg_la_LDFLAGS      = -module -avoid-version -no-undefined
+ jpeg_la_LIBADD       = @JPEGLIBS@ $(top_builddir)/src/lib/libImlib2.la
+ jpeg_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ png_la_SOURCES       = loader_png.c
+ png_la_CPPFLAGS      = @PNG_CFLAGS@ $(AM_CPPFLAGS)
+-png_la_LDFLAGS       = -module -avoid-version
++png_la_LDFLAGS       = -module -avoid-version -no-undefined
+ png_la_LIBADD        = @PNG_LIBS@ $(top_builddir)/src/lib/libImlib2.la
+ png_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ tiff_la_SOURCES      = loader_tiff.c
+-tiff_la_LDFLAGS      = -module -avoid-version
++tiff_la_LDFLAGS      = -module -avoid-version -no-undefined
+ tiff_la_LIBADD       = @TIFFLIBS@ $(top_builddir)/src/lib/libImlib2.la
+ tiff_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ ff_la_SOURCES        = loader_ff.c
+-ff_la_LDFLAGS        = -module -avoid-version
++ff_la_LDFLAGS        = -module -avoid-version -no-undefined
+ ff_la_LIBADD         = $(top_builddir)/src/lib/libImlib2.la
+ ff_la_LIBTOOLFLAGS   = --tag=disable-static
+ 
+ gif_la_SOURCES       = loader_gif.c
+-gif_la_LDFLAGS       = -module -avoid-version
++gif_la_LDFLAGS       = -module -avoid-version -no-undefined
+ gif_la_LIBADD        = @GIFLIBS@ $(top_builddir)/src/lib/libImlib2.la
+ gif_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ zlib_la_SOURCES      = loader_zlib.c
+-zlib_la_LDFLAGS      = -module -avoid-version
++zlib_la_LDFLAGS      = -module -avoid-version -no-undefined
+ zlib_la_LIBADD       = @ZLIBLIBS@ $(top_builddir)/src/lib/libImlib2.la
+ zlib_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ bz2_la_SOURCES       = loader_bz2.c
+-bz2_la_LDFLAGS       = -module -avoid-version
++bz2_la_LDFLAGS       = -module -avoid-version -no-undefined
+ bz2_la_LIBADD        = @BZ2LIBS@ $(top_builddir)/src/lib/libImlib2.la
+ bz2_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ id3_la_SOURCES       = loader_id3.c
+-id3_la_LDFLAGS       = -module -avoid-version
++id3_la_LDFLAGS       = -module -avoid-version -no-undefined
+ id3_la_LIBADD        = @ID3LIBS@ $(top_builddir)/src/lib/libImlib2.la
+ id3_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ pnm_la_SOURCES       = loader_pnm.c
+-pnm_la_LDFLAGS       = -module -avoid-version
++pnm_la_LDFLAGS       = -module -avoid-version -no-undefined
+ pnm_la_LIBADD        = $(top_builddir)/src/lib/libImlib2.la
+ pnm_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ argb_la_SOURCES      = loader_argb.c
+-argb_la_LDFLAGS      = -module -avoid-version
++argb_la_LDFLAGS      = -module -avoid-version -no-undefined
+ argb_la_LIBADD       = $(top_builddir)/src/lib/libImlib2.la
+ argb_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ bmp_la_SOURCES       = loader_bmp.c
+-bmp_la_LDFLAGS       = -module -avoid-version
++bmp_la_LDFLAGS       = -module -avoid-version -no-undefined
+ bmp_la_LIBADD        = $(top_builddir)/src/lib/libImlib2.la
+ bmp_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ xpm_la_SOURCES       = loader_xpm.c
+-xpm_la_LDFLAGS       = -module -avoid-version
++xpm_la_LDFLAGS       = -module -avoid-version -no-undefined
+ xpm_la_LIBADD        = $(top_builddir)/src/lib/libImlib2.la
+ xpm_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ tga_la_SOURCES       = loader_tga.c
+-tga_la_LDFLAGS       = -module -avoid-version
++tga_la_LDFLAGS       = -module -avoid-version -no-undefined
+ tga_la_LIBADD        = $(top_builddir)/src/lib/libImlib2.la
+ tga_la_LIBTOOLFLAGS = --tag=disable-static
+ 
+ lbm_la_SOURCES       = loader_lbm.c
+-lbm_la_LDFLAGS       = -module -avoid-version
++lbm_la_LDFLAGS       = -module -avoid-version -no-undefined
+ lbm_la_LIBADD        = $(top_builddir)/src/lib/libImlib2.la
+ lbm_la_LIBTOOLFLAGS = --tag=disable-static

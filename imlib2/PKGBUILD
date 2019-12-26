@@ -1,0 +1,41 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=imlib2
+pkgver=1.4.9
+pkgrel=1
+pkgdesc="Library that does image file loading and saving as well as rendering, manipulation, arbitrary polygon support"
+url="https://developers.google.com/speed/webp/"
+arch=('i686' 'x86_64')
+license=(BSD)
+depends=(libtiff giflib bzip2 freetype2 libxext libpng libjpeg-turbo libwebp)
+source=("https://downloads.sourceforge.net/enlightenment/${pkgname}-${pkgver}.tar.bz2"
+        "imlib2-1.4.7-multilib.patch"
+        "1.4.8-no-undefined.patch")
+md5sums=('23ef8b49f2793bc63b16839a2062298b'
+         '68027d8b2f43ed2f3801b195560d1ed4'
+         '97f0280bf858a91b40fc3463af492654')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -p1 -i ${srcdir}/imlib2-1.4.7-multilib.patch
+  patch -p2 -i ${srcdir}/1.4.8-no-undefined.patch
+  autoreconf -fvi
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+  --prefix=/usr \
+  --build=${CHOST} \
+  --disable-mmx \
+  --disable-amd64
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR=${pkgdir} install
+
+  install -Dm644 "${srcdir}"/${pkgname}-${pkgver}/COPYING \
+    -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
