@@ -1,0 +1,38 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=webp-pixbuf-loader
+pkgver=r39.fb04954
+pkgrel=1
+pkgdesc="WebM GDK Pixbuf Loader library"
+url="https://github.com/aruiz/webp-pixbuf-loader"
+arch=('i686' 'x86_64')
+license=('GPL')
+makedepends=(gdk-pixbuf2 libwebp)
+source=("git+https://github.com/aruiz/${pkgname}#branch=master"
+        "0001-remove-gdk-pixbuf-query-loaders.patch")
+md5sums=(SKIP
+         'a8375bb6f6b985cb3449d1c350d19471')
+
+pkgver() {
+  cd "${pkgname}"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd ${pkgname}
+  patch -p1 -i ${srcdir}/0001-remove-gdk-pixbuf-query-loaders.patch
+}
+
+build() {
+  meson --prefix=/usr ${pkgname} build
+  ninja -C build
+}
+
+package() {
+  gdk_pixbuf_moduledir=$(pkg-config --variable=gdk_pixbuf_moduledir gdk-pixbuf-2.0)
+  install -Dm755 build/cygpixbufloader-webp.dll \
+    -t ${pkgdir}${gdk_pixbuf_moduledir}
+  mv ${pkgdir}${gdk_pixbuf_moduledir}/{cyg,msys-}pixbufloader-webp.dll
+  install -Dm644 build/libpixbufloader-webp.dll.a \
+    -t ${pkgdir}${gdk_pixbuf_moduledir}
+}
