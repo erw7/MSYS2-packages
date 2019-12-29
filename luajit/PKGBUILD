@@ -1,0 +1,49 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=luajit
+pkgver=2.1
+pkgrel=1
+pkgdesc='Just-in-time compiler and drop-in replacement for Lua 5.1'
+arch=('i686' 'x86_64')
+license=('MIT')
+url="https://luajit.org/"
+depends=('gcc-libs')
+source=(git+https://github.com/LuaJIT/LuaJIT#branch=v2.1
+        '2.0.4-luaconf_h.patch'
+        '2.0.4-pkgconfig.patch')
+sha256sums=('SKIP'
+            'de4d5b455d340ca92b6ddef38dbea5b81c42f3aa3b1b7036ea0f721a8adf6624'
+            '02ee772f138f792077b9074eb7aa89d4668de7dc186edb38af446f78bc1e84ac')
+
+prepare() {
+  cd ${srcdir}/LuaJIT
+
+  patch -p2 -i ${srcdir}/2.0.4-luaconf_h.patch
+  patch -p2 -i ${srcdir}/2.0.4-pkgconfig.patch
+}
+
+build() {
+  cd ${srcdir}/LuaJIT
+
+  CFLAGS="${CFLAGS} -fexceptions"
+  make all \
+       Q= E=@: \
+       PREFIX=/usr \
+       LUAJIT_SO="msys-luajit-\$(ABIVER)-\$(MAJVER).dll" \
+       TARGET_XSHLDFLAGS="-shared -Wl,--out-implib,libluajit-\$(ABIVER).dll.a" \
+       TARGET_STRIP=:
+}
+
+package() {
+  cd ${srcdir}/LuaJIT
+
+  make DESTDIR=${pkgdir} \
+       PREFIX=/usr \
+       FILE_SO="libluajit-\$(ABIVER).dll.a" \
+       FILE_T="luajit.exe msys-luajit-\$(ABIVER)-\$(MAJVER).dll" \
+       INSTALL_SONAME="libluajit-\$(ABIVER).dll.a" \
+       INSTALL_SOSHORT="libluajit-\$(ABIVER).dll.a" \
+       INSTALL_TNAME= \
+       LDCONFIG=: RM=: SYMLINK=: \
+       install
+}
