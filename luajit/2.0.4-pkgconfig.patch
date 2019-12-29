@@ -1,0 +1,21 @@
+--- origsrc/LuaJIT-2.0.4/etc/luajit.pc	2015-05-14 13:30:00.000000000 -0500
++++ src/LuaJIT-2.0.4/etc/luajit.pc	2015-09-16 10:56:11.705116500 -0500
+@@ -5,15 +5,15 @@ relver=4
+ version=${majver}.${minver}.${relver}
+ abiver=5.1
+ 
+-prefix=/usr/local
++prefix=/usr
+ multilib=lib
+ exec_prefix=${prefix}
+ libdir=${exec_prefix}/${multilib}
+ libname=luajit-${abiver}
+ includedir=${prefix}/include/luajit-${majver}.${minver}
+ 
+ INSTALL_LMOD=${prefix}/share/lua/${abiver}
+-INSTALL_CMOD=${prefix}/${multilib}/lua/${abiver}
++INSTALL_CMOD=${prefix}/${multilib}/luajit/${majver}.${minver}
+ 
+ Name: LuaJIT
+ Description: Just-in-time compiler for Lua
+
