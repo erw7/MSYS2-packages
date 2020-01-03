@@ -1,0 +1,29 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=msgpack-c
+pkgver=3.2.1
+pkgrel=1
+pkgdesc='An efficient object serialization library'
+arch=('i686' 'x86_64')
+license=('Apache')
+url='https://msgpack.org/'
+makedepends=(cmake ninja)
+source=("https://github.com/msgpack/msgpack-c/releases/download/cpp-${pkgver}/msgpack-${pkgver}.tar.gz")
+md5sums=('ef10c80885c4f5e4baf8d37113629eae')
+
+build() {
+  cmake -G Ninja -Hmsgpack-${pkgver} -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DMSGPACK_ENABLE_STATIC=OFF \
+        -DMSGPACK_CXX11=ON \
+        -DMSGPKAC_BUILD_EXAMPLES=OFF \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_CXX_FLAGS="-D_GNU_SOURCE=1"
+  cmake --build build
+}
+
+package() {
+  DESTDIR=${pkgdir} cmake --build build --target install
+}
