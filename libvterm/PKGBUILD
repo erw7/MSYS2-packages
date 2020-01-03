@@ -1,0 +1,22 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libvterm
+_git=7c72294
+pkgver=0.1.2.git5.${_git}
+pkgrel=1
+pkgdesc='Abstract library implementation of a VT220/xterm/ECMA-48 terminal emulator'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='https://github.com/neovim/libvterm'
+source=(git+https://github.com/neovim/${pkgname}#commit=${_git})
+md5sums=('SKIP')
+
+build() {
+  cd ${pkgname}
+  LDFLAGS="${LDFLAGS} -no-undefined" make PREFIX=/usr
+}
+
+package() {
+  cd ${pkgname}
+  make DESTDIR=${pkgdir} PREFIX=/usr install
+}
