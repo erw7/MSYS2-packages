@@ -1,0 +1,27 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=luajit-mpack
+pkgver=1.0.8
+pkgrel=1
+pkgdesc='Simple implementation of msgpack in C LuaJIT'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='https://github.com/libmpack/libmpack-lua'
+depends=(libmpack luajit)
+makedepends=(luajit pkg-config)
+source=("libmpack-lua-${pkgver}.tar.gz::https://github.com/libmpack/libmpack-lua/archive/${pkgver}.tar.gz")
+md5sums=('bffcc70a8c4bedfcf4af91da6afb9ae4')
+
+build() {
+  cd libmpack-lua-${pkgver}
+
+  gcc -O2 -fPIC -DMPACK_USE_SYSTEM `pkg-config --cflags mpack` `pkg-config --cflags luajit` -c lmpack.c -o lmpack.o
+  gcc -shared -o mpack.dll lmpack.o `pkg-config --libs mpack` `pkg-config --libs luajit`
+}
+
+package() {
+  cd libmpack-lua-${pkgver}
+
+  install -Dm755 mpack.dll -t ${pkgdir}/`pkg-config --variable=INSTALL_CMOD luajit`
+  install -Dm644 LICENSE-MIT -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
