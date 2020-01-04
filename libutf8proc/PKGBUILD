@@ -1,0 +1,33 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=libutf8proc
+pkgver=2.4.0
+pkgrel=1
+pkgdesc='C library for processing UTF-8 encoded Unicode strings'
+arch=('i686' 'x86_64')
+license=(custom)
+url='https://github.com/neovim/libvterm'
+makedepends=(cmake ninja)
+source=("utf8proc-${pkgver}.tar.gz::https://codeload.github.com/JuliaStrings/utf8proc/tar.gz/v2.4.0"
+        "libutf8proc.pc.in")
+md5sums=('ccea4d10dc45749166273ae370e9ceed'
+         '551b8fd0f711daa18bfc439e6749ea23')
+
+prepare() {
+  sed "s#@VESRION#${pkgver}#" libutf8proc.pc.in > libutf8proc.pc
+}
+build() {
+  cmake -G Ninja -Hutf8proc-${pkgver} -Bbuild \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_SHARED_LIBS=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR=${pkgdir} cmake --build build --target install
+
+  cd utf8proc-${pkgver}
+  install -Dm644 LICENSE.md -t ${pkgdir}/usr/share/licenses/${pkgname}/
+  install -Dm644 ${srcdir}/libutf8proc.pc -t ${pkgdir}/usr/lib/pkgconfig/
+}
