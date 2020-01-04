@@ -1,0 +1,23 @@
+# Maintainer: erw7 <erw7.github@gmal.com>
+
+pkgname=libmpack
+pkgver=1.0.5
+pkgrel=1
+pkgdesc='Simple implementation of msgpack in C'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='https://github.com/libmpack/libmpack'
+source=(https://github.com/libmpack/libmpack/archive/${pkgver}.tar.gz)
+md5sums=('ac4b25bfd0a07003ed8dac9c6dc851a6')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  LDFLAGS="${LDFLAGS} -no-undefined" make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  LDFLAGS="${LDFLAGS} -no-undefined" make DESTDIR=${pkgdir} PREFIX=/usr install
+}
