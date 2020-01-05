@@ -1,0 +1,30 @@
+--- origsrc/luafilesystem-1_7_0_2/Makefile	2017-09-15 19:07:33.000000000 -0400
++++ src/luafilesystem-1_7_0_2/Makefile	2019-05-01 11:54:40.441792200 -0400
+@@ -12,7 +12,7 @@ OBJS= src/$T.o
+ lib: src/lfs.so
+ 
+ src/lfs.so: $(OBJS)
+-	MACOSX_DEPLOYMENT_TARGET="10.3"; export MACOSX_DEPLOYMENT_TARGET; $(CC) $(LIB_OPTION) -o src/lfs.so $(OBJS)
++	MACOSX_DEPLOYMENT_TARGET="10.3"; export MACOSX_DEPLOYMENT_TARGET; $(CC) $(LIB_OPTION) -o src/lfs.so $(OBJS) -lluajit-5.1
+ 
+ test: lib
+ 	LUA_CPATH=./src/?.so lua tests/test.lua
+--- origsrc/luafilesystem-1_7_0_2/src/lfs.c	2017-09-15 19:07:33.000000000 -0400
++++ src/luafilesystem-1_7_0_2/src/lfs.c	2019-05-01 11:57:03.942910400 -0400
+@@ -115,9 +115,16 @@ typedef struct dir_data {
+ #define STAT_FUNC _stati64
+ #define LSTAT_FUNC STAT_FUNC
+ #else
++#if defined __CYGWIN__
++#include <io.h>
++#define _O_TEXT               O_TEXT
++#define _O_BINARY             O_BINARY
++#define lfs_setmode(file, m)   (_setmode(fileno(file), m))
++#else
+ #define _O_TEXT               0
+ #define _O_BINARY             0
+ #define lfs_setmode(file, m)   ((void)file, (void)m, 0)
++#endif
+ #define STAT_STRUCT struct stat
+ #define STAT_FUNC stat
+ #define LSTAT_FUNC lstat
