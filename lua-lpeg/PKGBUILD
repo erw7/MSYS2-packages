@@ -1,0 +1,28 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=lpeg
+pkgname=luajit-lpeg
+pkgver=1.0.2
+pkgrel=1
+pkgdesc='attern-matching library for LuaJIT'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='http://www.inf.puc-rio.br/~roberto/lpeg'
+depends=(luajit)
+makedepends=(pkg-config)
+source=("http://www.inf.puc-rio.br/~roberto/${pkgbase}/${pkgbase}-${pkgver}.tar.gz"
+        LICENSE)
+md5sums=('d342571886f1abcb7afe6a83d024d583'
+         'd442138f35eea420362ff01fb712e411')
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  gcc ${CFLAGS} -shared `pkg-config --cflags luajit` -o ${pkgbase}.dll *.c `pkg-config --libs luajit`
+}
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  install -Dm755 ${pkgbase}.dll -t ${pkgdir}/`pkg-config --variable=INSTALL_CMOD luajit`
+  install -Dm644 re.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+  install -Dm644 ../LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
