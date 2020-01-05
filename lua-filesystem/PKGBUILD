@@ -1,0 +1,35 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=luafilesystem
+pkgname=luajit-filesystem
+pkgver=1.7.0.2
+_tag=${pkgver//./_}
+pkgrel=1
+pkgdesc='File System Library for the Lua Programming Language'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='http://keplerproject.github.io/luafilesystem'
+depends=(luajit)
+makedepends=(pkg-config)
+source=("luafilesystem-${_tag}.tar.gz::https://github.com/keplerproject/luafilesystem/archive/v${_tag}.tar.gz"
+        1.7.0.2-cygwin.patch
+        LICENSE)
+md5sums=('5166c00df1599a54dc97e84852be7f0c'
+         '863477744d1155a6c5b9b989f07972da'
+         '5fb151290608f5f9fc0feb3efcecb0e7')
+
+prepare() {
+  cd ${pkgbase}-${_tag}
+  patch -p2 -i ${srcdir}/1.7.0.2-cygwin.patch
+}
+
+build() {
+  cd ${pkgbase}-${_tag}
+  make LUA_INC=`pkg-config --variable=includedir luajit`
+}
+
+package() {
+  cd ${pkgbase}-${_tag}
+  install -Dm755 src/lfs.so ${pkgdir}`pkg-config --variable=INSTALL_CMOD luajit`/lfs.dll
+  install -Dm644 ../LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
