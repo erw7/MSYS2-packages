@@ -1,0 +1,18 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=mediator
+pkgname=luajit-${pkgbase}
+pkgver=1.1.2_0
+pkgrel=1
+pkgdesc="Event handling through channels"
+arch=('any')
+license=('MIT')
+url='http://olivinelabs.com/mediator_lua/'
+depends=(luajit)
+source=("https://github.com/Olivine-Labs/mediator_lua/archive/v${pkgver//_/-}.tar.gz")
+md5sums=('3ef01fc6ced99f6e4c2a229e91c459bf')
+
+package() {
+  cd ${pkgbase}_lua-${pkgver//_/-}
+  install -Dm644 src/mediator.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+}
