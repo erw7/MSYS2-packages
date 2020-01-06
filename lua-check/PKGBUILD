@@ -1,0 +1,25 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+_pkgbase=luacheck
+pkgname=luajit-check
+pkgver=0.23.0
+pkgrel=1
+pkgdesc="A static analyzer and a linter for LuaJIT"
+arch=('any')
+license=('MIT')
+url='https://github.com/mpeterv/luacheck'
+depends=(luajit luajit-argparse luajit-filesystem)
+makedepends=(pkg-config)
+source=("https://github.com/mpeterv/${_pkgbase}/archive/${pkgver}.tar.gz")
+md5sums=('0ae67cfd7c3175c86195d064f63e0acf')
+
+package() {
+  cd ${_pkgbase}-${pkgver}
+  install -Dm644 src/${_pkgbase}/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${_pkgbase}/
+  install -Dm644 src/${_pkgbase}/stages/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${_pkgbase}/stages/
+  install -Dm755 bin/luacheck.lua -t ${pkgdir}/usr/bin/
+  sed -i -e 's%#!/usr/bin/env lua%#!/usr/bin/luajit%' ${pkgdir}/usr/bin/luacheck.lua
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
