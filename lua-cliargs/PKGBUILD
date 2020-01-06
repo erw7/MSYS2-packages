@@ -1,0 +1,24 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=cliargs
+pkgname=luajit-cliargs
+pkgver=3.0_2
+pkgrel=1
+pkgdesc="A command-line argument parser for LuaJIT"
+arch=('any')
+license=('MIT')
+url='https://github.com/amireh/lua_cliargs'
+depends=(luajit)
+source=("https://github.com/amireh/lua_cliargs/archive/v${pkgver//_/-}.tar.gz"        )
+md5sums=('37d061ef507f0e35ea58cddb692e93b2')
+
+package() {
+  cd lua_${pkgbase}-${pkgver//_/-}
+  install -Dm644 src/cliargs.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+  install -Dm644 src/cliargs/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/cliargs/
+  install -Dm644 src/cliargs/utils/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/cliargs/utils/
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
