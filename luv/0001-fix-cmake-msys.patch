@@ -1,0 +1,55 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a165783..4e94c83 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,12 @@ if(POLICY CMP0053)
+   cmake_policy(SET CMP0053 NEW) # faster evaluation of variable references
+ endif()
+ 
++if(POLICY CMP0054)
++  cmake_policy(SET CMP0054 NEW)
++endif()
++
++set(CMAKE_LEGACY_CYGWIN_WIN32 0)
++
+ project (luv C ASM)
+ 
+ set(LUV_VERSION_MAJOR 1)
+@@ -172,6 +178,22 @@ if(WIN32)
+       endif (LUA_BUILD_TYPE STREQUAL System)
+     endif (USE_LUAJIT)
+   endif (LUA)
++elseif("${CMAKE_SYSTEM_NAME}" MATCHES "CYGWIN|MSYS")
++  SET(INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin)
++  message("INSTALL_BIND_DIR ${INSTALL_BIN_DIR}")
++  if (LUA)
++    target_link_libraries(luv ${LIBUV_LIBRARIES} ${LUA_LIBRARIES})
++  else (LUA)
++    if (USE_LUAJIT)
++      target_link_libraries(luv ${LIBUV_LIBRARIES} ${LUAJIT_LIBRARIES})
++    else (USE_LUAJIT)
++      if (LUA_BUILD_TYPE STREQUAL System)
++          target_link_libraries(luv ${LIBUV_LIBRARIES} ${LUA_LIBRARIES})
++      else (LUA_BUILD_TYPE STREQUAL System)
++          target_link_libraries(luv ${LIBUV_LIBRARIES} lualib)
++      endif (LUA_BUILD_TYPE STREQUAL System)
++    endif (USE_LUAJIT)
++  endif (LUA)
+ elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+   target_link_libraries(luv ${LIBUV_LIBRARIES} rt)
+ else()
+@@ -197,12 +219,14 @@ if (CMAKE_INSTALL_PREFIX)
+   install(TARGETS luv
+     ARCHIVE DESTINATION "${INSTALL_LIB_DIR}"
+     LIBRARY DESTINATION "${INSTALL_LIB_DIR}"
++    RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
+   )
+   if (NOT BUILD_MODULE)
+     if(UNIX)
+       set(prefix ${CMAKE_INSTALL_PREFIX})
+       set(includedir ${INSTALL_INC_DIR})
+       set(libdir ${INSTALL_LIB_DIR})
++      set(bindir ${INSTALL_BIN_DIR})
+       configure_file(libluv.pc.in ${CMAKE_CURRENT_BINARY_DIR}/libluv.pc @ONLY)
+       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libluv.pc
+         DESTINATION ${INSTALL_LIB_DIR}/pkgconfig)
