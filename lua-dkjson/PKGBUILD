@@ -1,0 +1,18 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=dkjson
+pkgname=luajit-dkjson
+pkgver=2.5
+pkgrel=1
+pkgdesc="JSON module for LuaJIT"
+arch=('any')
+license=('MIT')
+url='http://dkolf.de/src/dkjson-lua.fsl/home'
+depends=(luajit)
+source=("https://github.com/LuaDist/dkjson/archive/${pkgver}.tar.gz"        )
+md5sums=('27c9399f13885f6ed989acda9a0e4fee')
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  install -Dm644 dkjson.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+}
