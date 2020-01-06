@@ -1,0 +1,20 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=penlight
+pkgname=luajit-${pkgbase}
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="Lua utility libraries loosely based on the Python standard libraries"
+arch=('any')
+license=('MIT')
+url='http://tieske.github.io/Penlight'
+depends=(luajit)
+source=("https://github.com/Tieske/Penlight/archive/${pkgver}.tar.gz")
+md5sums=('7adc5476586792380e14abb91343d2c9')
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  install -Dm644 lua/pl/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/pl/
+  install -Dm644 LICENSE.md -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
