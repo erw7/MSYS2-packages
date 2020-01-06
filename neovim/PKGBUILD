@@ -1,0 +1,43 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+pkgname=neovim
+pkgver=v0.5.0_297_g83b0054b8
+pkgrel=1
+pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
+arch=('i686' 'x86_64')
+license=('custom:neovim')
+url="https://neovim.io"
+depends=('libiconv' 'libintl' 'libluv' 'libtermkey' 'libutf8proc' 'libuv'
+         'libvterm' 'luajit' 'msgpack-c' 'unibilium')
+makedepends=('cmake' 'gettext-devel' 'gperf' 'libiconv-devel' 'luajit-mpack'
+             'luajit-busted' 'luajit-nvim' 'ninja' )
+groups=('editors')
+source=(git+https://github.com/neovim/neovim)
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname}
+  git describe --first-parent --dirty | sed "s/0.4.0/0.5.0/;s/-/_/g"
+}
+
+build() {
+  # If CMAKE_BUILD_TYPE=Release, an abnormally terminated binary is created,
+  # so use RelWithDebInfo.
+  cmake -Hneovim -Bbuild -GNinja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_INSTALL_PREFIX=/usr
+  ninja -C build
+}
+
+check() {
+  cd ${srcdir}/build
+  ./bin/nvim --version
+  ./bin/nvim --headless -u NONE -i NONE -c ':quit'
+}
+
+package() {
+  DESTDIR=${pkgdir} ninja -C build install
+
+  cd ${srcdir}/neovim
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
