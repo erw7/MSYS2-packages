@@ -1,0 +1,22 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=coxpcall
+pkgname=luajit-${pkgbase}
+_pkgver=1.17.0
+pkgver=${_pkgver}_1
+pkgrel=1
+pkgdesc="Coroutine safe xpcall and pcall"
+arch=('any')
+license=('MIT')
+url='http://keplerproject.github.io/coxpcall'
+depends=(luajit)
+source=("https://github.com/keplerproject/coxpcall/archive/v${_pkgver//./_}.tar.gz")
+md5sums=('9719c0f27f4ad6fc5246bc9a13948eb1')
+
+package() {
+  cd ${pkgbase}-${_pkgver//./_}
+  install -Dm644 src/coxpcall.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+  install -Dm644 doc/license.html -t ${pkgdir}/usr/share/licenses/${pkgname}/
+  install -Dm644 doc/doc.css -t ${pkgdir}/usr/share/licenses/${pkgname}/
+  install -Dm644 doc/coxpcall.png -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
