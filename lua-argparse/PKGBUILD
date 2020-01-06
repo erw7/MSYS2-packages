@@ -1,0 +1,19 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=argparse
+pkgname=luajit-${pkgbase}
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="A feature-rich command-line argument parser for LuaJIT"
+arch=('any')
+license=('MIT')
+url='https://github.com/mpeterv/argparse'
+depends=(luajit)
+source=("https://github.com/mpeterv/argparse/archive/${pkgver}.tar.gz")
+md5sums=('cf9def45bcdd007c7b1e2ed54c8dd583')
+
+package() {
+  cd ${pkgbase}-${pkgver}
+  install -Dm644 src/argparse.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
