@@ -1,0 +1,32 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=busted
+pkgname=luajit-${pkgbase}
+pkgver=v2.0.0
+pkgrel=1
+pkgdesc="Elegant Lua unit testing"
+arch=('any')
+license=('MIT')
+url='http://olivinelabs.com/busted/'
+depends=(luajit luajit-cliargs luajit-filesystem luajit-system luajit-dkjson
+         luajit-say luajit-luassert luajit-term luajit-penlight luajit-mediator)
+makedepends=(pkg-config)
+source=("https://github.com/Olivine-Labs/busted/archive/${pkgver}.tar.gz")
+md5sums=('01bcad9da701e1a89a51b51360e1e701')
+
+package() {
+  cd ${pkgbase}-${pkgver//v/}
+  install -Dm644 busted/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/
+  install -Dm644 busted/languages/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/languages
+  install -Dm644 busted/modules/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/modules/
+  install -Dm644 busted/modules/files/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/modules/files/
+  install -Dm644 busted/outputHandlers/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/outputHnadlers/
+   install -Dm755 bin/busted -t ${pkgdir}/usr/bin/
+   sed -i -e 's%#!/usr/bin/env lua%#!/usr/bin/luajit%' ${pkgdir}/usr/bin/busted
+   install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
