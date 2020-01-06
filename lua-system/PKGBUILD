@@ -1,0 +1,29 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=system
+pkgname=luajit-${pkgbase}
+_pkgver=0.2.1
+pkgver=${_pkgver}_0
+pkgrel=1
+pkgdesc='Platform independent system calls for LuaJIT'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='http://olivinelabs.com/luasystem/'
+depends=(luajit)
+makedepends=(pkg-config)
+source=("https://github.com/o-lim/luasystem/archive/v${_pkgver}.tar.gz")
+md5sums=('447b85ad128ef537b7c8d0837fad210f')
+
+build() {
+  cd luasystem-${_pkgver}/src
+  gcc ${CLAGS} -shared `pkg-config --cflags luajit` -o core.dll *.c `pkg-config --libs luajit`
+}
+
+package() {
+  cd luasystem-${_pkgver}
+  install -Dm755 src/core.dll \
+    -t ${pkgdir}`pkg-config --variable=INSTALL_CMOD luajit`/system/
+  install -Dm644 system/init.lua \
+    -t ${pkgdir}`pkg-config --variable=INSTALL_LMOD luajit`/system/
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
