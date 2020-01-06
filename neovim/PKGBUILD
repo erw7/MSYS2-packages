@@ -1,0 +1,40 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+pkgname=neovim
+pkgver=v0.5.0_296_gfa9b057d3
+pkgrel=1
+pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
+arch=('i686' 'x86_64')
+license=('custom:neovim')
+url="https://neovim.io"
+depends=('libtermkey' 'libuv' 'msgpack-c' 'unibilium' 'libvterm' 'luajit'
+         'libluv' 'libutf8proc')
+makedepends=('cmake' 'ninja' 'luajit-mpack' 'luajit-busted' 'luajit-nvim')
+groups=('editors')
+source=(git+https://github.com/neovim/neovim)
+sha256sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname}
+  git describe --first-parent --dirty | sed "s/0.4.0/${pkgver}/;s/-/_/g"
+}
+
+build() {
+  cmake -Hneovim -Bbuild -GNinja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+  ninja -C build
+}
+
+check() {
+  cd ${srcdir}/build
+  ./bin/nvim --version
+  ./bin/nvim --headless -u NONE -i NONE -c ':quit'
+}
+
+package() {
+  DESTDIR=${pkgdir} ninja -C build install
+
+  cd ${srcdir}/neovim
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
