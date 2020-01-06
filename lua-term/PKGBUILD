@@ -1,0 +1,29 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=term
+pkgname=luajit-${pkgbase}
+_pkgver=0.07
+pkgver=0.7_1
+pkgrel=1
+pkgdesc='Terminal functions for LuaJIT'
+arch=('i686' 'x86_64')
+license=('MIT')
+url='https://github.com/hoelzro/lua-term'
+depends=(luajit)
+makedepends=(pkg-config)
+source=("https://github.com/hoelzro/lua-term/archive/${_pkgver}.tar.gz")
+md5sums=('24505a9adf2321a3c4a1752f3e5e3b92')
+
+build() {
+  cd lua-term-${_pkgver}
+  gcc ${CLAGS} -shared `pkg-config --cflags luajit` -o core.dll core.c `pkg-config --libs luajit`
+}
+
+package() {
+  cd lua-term-${_pkgver}
+  install -Dm755 core.dll \
+    -t ${pkgdir}`pkg-config --variable=INSTALL_CMOD luajit`/term/
+  install -Dm644 term/*.lua \
+    -t ${pkgdir}`pkg-config --variable=INSTALL_LMOD luajit`/term/
+  install -Dm644 COPYING -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
