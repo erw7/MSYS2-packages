@@ -1,0 +1,26 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+_pkgbase=lua-client
+pkgname=luajit-nvim
+pkgver=0.2.1_1
+pkgrel=1
+pkgdesc='Lua client to Nvim'
+arch=('i686' 'x86_64')
+license=('Apache')
+url='https://github.com/neovim/lua-client'
+depends=(luajit luajit-mpack luajit-luv luajit-coxpcall)
+makedepends=(pkg-config)
+source=("https://github.com/neovim/lua-client/archive/${pkgver//_/-}.tar.gz")
+md5sums=('4a361bdfdaf6af9a7d7d19f66ee4cf89')
+
+build() {
+  cd ${_pkgbase}-${pkgver//_/-}/nvim
+  gcc ${CFLAGS} -shared `pkg-config --cflags luajit` -o native.dll native.c `pkg-config --libs luajit`
+}
+
+package() {
+  cd ${_pkgbase}-${pkgver//_/-}/nvim
+  install -Dm755 native.dll -t ${pkgdir}/`pkg-config --variable=INSTALL_CMOD luajit`/nvim/
+  install -Dm644 *.lua -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`
+  install -Dm644 ../LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
