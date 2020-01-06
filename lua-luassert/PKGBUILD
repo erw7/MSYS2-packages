@@ -1,0 +1,27 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=luassert
+pkgname=luajit-luassert
+_pkgver=1.8.0
+pkgver=${_pkgver}_0
+pkgrel=1
+pkgdesc="Lua Assertions Extension"
+arch=('any')
+license=('MIT')
+url='http://olivinelabs.com/busted/'
+depends=(luajit luajit-say)
+source=("https://github.com/Olivine-Labs/luassert/archive/v${_pkgver}.tar.gz")
+md5sums=('51d7705d73c85ad2063fc4c340fa0979')
+
+package() {
+  cd ${pkgbase}-${_pkgver}
+  install -Dm644 src/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/
+  install -Dm644 src/formatters/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/formatters
+  install -Dm644 src/languages/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/languages/
+  install -Dm644 src/matchers/*.lua \
+    -t ${pkgdir}/`pkg-config --variable=INSTALL_LMOD luajit`/${pkgbase}/matchers
+  install -Dm644 LICENSE -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
