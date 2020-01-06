@@ -1,0 +1,63 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgbase=luv
+pkgname=(libluv luajit-luv)
+pkgver=1.32.0
+pkgrel=1
+arch=('i686' 'x86_64')
+license=('Apache')
+url='https://github.com/luvit/luv'
+depends=(libuv luajit)
+makedepends=(cmake ninja libuv-devel)
+source=("https://github.com/luvit/luv/releases/download/${pkgver}-0/${pkgbase}-${pkgver}-0.tar.gz"
+        0001-fix-cmake-msys.patch)
+md5sums=('4389bcee1e92896ef3fcbbba5b7c11dd'
+         '571d9b1fd4a76f4621f5f3246f31956f')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}-0
+
+  patch -p1 -i ${srcdir}/0001-fix-cmake-msys.patch
+}
+build() {
+  cmake -G Ninja -H${pkgbase}-${pkgver}-0 -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_SHARED_LIBUV=ON \
+        -DLUA_BUILD_TYPE=System \
+        -DBUILD_MODULE=OFF \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+  DESTDIR=${srcdir}/dest cmake --build build --target install
+  cmake -G Ninja -H${pkgbase}-${pkgver}-0 -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_SHARED_LIBUV=ON \
+        -DLUA_BUILD_TYPE=System \
+        -DBUILD_MODULE=ON \
+        -DBUILD_SHARED_LIBS=ON \
+        -DCMAKE_BUILD_TYPE=Release
+  cmake --build build
+  DESTDIR=${srcdir}/dest cmake --build build --target install
+}
+
+package_libluv() {
+  pkgdesc='Libray of bare libuv bindings for LuaJIT'
+
+  install -Dm755 ${srcdir}/dest/usr/bin/*.dll -t ${pkgdir}/usr/bin/
+  install -Dm644 ${srcdir}/dest/usr/include/luv/*.h \
+    -t ${pkgdir}/usr/include/luv/
+  install -Dm644 ${srcdir}/dest/usr/lib/libluv.dll.a -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/libluv.pc \
+    -t ${pkgdir}/usr/lib/pkgconfig/
+  install -Dm644 ${srcdir}/${pkgbase}-${pkgver}-0/LICENSE.txt \
+    -t ${pkgdir}/usr/share/licenses/${pkgname}/
+}
+
+package_luajit-luv() {
+  pkgdesc='Bare libuv bindings for LuaJIT'
+
+  install -Dm755 ${srcdir}/dest/usr/lib/lua/5.1/luv.dll \
+    -t ${pkgdir}`pkg-config --variable=INSTALL_CMOD luajit`
+  install -Dm644 ${srcdir}/${pkgbase}-${pkgver}-0/LICENSE.txt \
+    -t ${pkgdir}/usr/share/licenses/${pkgname}
+}
