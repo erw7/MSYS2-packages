@@ -1,9 +1,10 @@
 This is not an issue on Cygwin as all extensions must be linked against
 their respective libpython on PE platforms.
 
---- origsrc/vim73/src/if_python.c	2013-05-13 12:58:43.770727000 -0500
-+++ src/vim73/src/if_python.c	2013-05-13 16:40:04.432754100 -0500
-@@ -680,7 +680,7 @@ python_runtime_link_init(char *libname,
+index 7b2207085..57fb41fef 100644
+--- a/src/if_python.c
++++ b/src/if_python.c
+@@ -679,7 +679,7 @@ python_runtime_link_init(char *libname, int verbose)
      PYTHON_PROC *ucs_as_encoded_string =
  				   (PYTHON_PROC*)&py_PyUnicode_AsEncodedString;
  
@@ -12,9 +13,11 @@ their respective libpython on PE platforms.
      // Can't have Python and Python3 loaded at the same time.
      // It cause a crash, because RTLD_GLOBAL is needed for
      // standard C extension libraries of one or both python versions.
---- origsrc/vim73/src/if_python3.c	2013-05-13 12:58:44.176767800 -0500
-+++ src/vim73/src/if_python3.c	2013-05-13 16:40:26.651024900 -0500
-@@ -471,7 +471,7 @@ py3_runtime_link_init(char *libname, int
+diff --git a/src/if_python3.c b/src/if_python3.c
+index 8c22514b7..fddd8091a 100644
+--- a/src/if_python3.c
++++ b/src/if_python3.c
+@@ -662,7 +662,7 @@ py3_runtime_link_init(char *libname, int verbose)
      PYTHON_PROC *ucs_as_encoded_string =
  				 (PYTHON_PROC *)&py3_PyUnicode_AsEncodedString;
  

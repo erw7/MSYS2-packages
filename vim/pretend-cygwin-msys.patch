@@ -1,13 +1,22 @@
-diff --git a/src/configure.ac b/src/configure.ac-patched
-index ff1f482..b99c7e2 100644
+diff --git a/src/configure.ac b/src/configure.ac
+index d440a465c..a305d9cd6 100644
 --- a/src/configure.ac
-+++ b/src/configure.ac-patched
-@@ -618,6 +618,8 @@
++++ b/src/configure.ac
+@@ -668,8 +668,16 @@ if test "$enable_luainterp" = "yes" -o "$enable_luainterp" = "dynamic"; then
+       if test "x$vi_cv_with_luajit" != "xno"; then
+ 	luajit="jit"
        fi
++      indexes="0 1 2 3 4 5 6 7 8 9"
++      for i in $indexes ""; do
++        if test -f "${vi_cv_path_lua_pfx}/bin/msys-lua${luajit}-${vi_cv_version_lua}-${i}.dll"; then
++          break
++        fi
++      done
        if test -f "${vi_cv_path_lua_pfx}/bin/cyglua-${vi_cv_version_lua}.dll"; then
- 	vi_cv_dll_name_lua="cyglua-${vi_cv_version_lua}.dll"
-+      elif test -f "${vi_cv_path_lua_pfx}/bin/msys-lua-${vi_cv_version_lua}.dll"; then
-+	vi_cv_dll_name_lua="msys-lua-${vi_cv_version_lua}.dll"
+-	vi_cv_dll_name_lua="cyglua-${vi_cv_version_lua}.dll"
++        vi_cv_dll_name_lua="cyglua-${vi_cv_version_lua}.dll"
++      elif test -f "${vi_cv_path_lua_pfx}/bin/msys-lua${luajit}-${vi_cv_version_lua}-${i}.dll"; then
++          vi_cv_dll_name_lua="msys-lua${luajit}-${vi_cv_version_lua}-${i}.dll"
        else
- 	if test "x$MACOSX" = "xyes"; then
+ 	if test "x$MACOS_X" = "xyes"; then
  	  ext="dylib"

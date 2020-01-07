@@ -2,17 +2,17 @@
 
 pkgname=vim
 _topver=8.2
-_patchlevel=1895
+_patchlevel=2292
 _versiondir="${pkgname}${_topver//./}"
-pkgver=${_topver}.${_patchlevel}
+pkgver=8.2.0096
 pkgrel=1
 arch=('i686' 'x86_64')
 license=('custom:vim')
 url="http://www.vim.org"
 depends=('ncurses')
 groups=('editors')
-makedepends=('gawk' 'perl-devel' 'python-devel' 'ruby' 'libiconv' 'ncurses-devel')
-source=(${pkgname}-${pkgver}.tar.gz::https://github.com/vim/vim/archive/v${pkgver}.tar.gz
+makedepends=('gawk' 'luajit' 'perl' 'python2' 'python3' 'ruby' 'tcl' 'libiconv' 'ncurses-devel' 'libcrypt-devel')
+source=(git+https://github.com/vim/vim
         'dot.vimrc'
         '7.3-cygwin-mouse.patch'
         '7.3-virc.patch'
@@ -20,24 +20,29 @@ source=(${pkgname}-${pkgver}.tar.gz::https://github.com/vim/vim/archive/v${pkgve
         'pretend-cygwin-msys.patch'
         'accept-crlf.patch'
         'vim-completion')
-sha256sums=('b09ba36104717210d746f9b923c42d6b2e32db26dd9f74d60fb1fe4550831bc1'
+sha256sums=('SKIP'
             'edd18e0756406ee7b659e4552e444c50c3a0c1e9fb4fce2ddd770c933ea6c7f5'
             'bca6e030d50c0d2468ab5c78aa0b359eb18a88a197de8406c593458ffedde922'
             '44d7738a8f801195898eeef766ff77506c717dd5d19145ade3c1c2349d4bc4fd'
-            'd60db82149b68c6e3bfc7f840191af3e5cbc8af46409ec3b752407689c44f35b'
-            '5fcec194d2fcb2a624358d8ce074e8d97b873b5c2fff2118491b57a4880737d9'
+            '11575601156d935bfef63fbbaa0406e667bbdb8a813b97932fde5d200d65e235'
+            '99ef4ca5a03828b95c3e3b06ace2a996afdb8a4f52bb8102ec535e7eeefbc9c6'
             'd72569b4f9ba031a6769a49bddd3a4f740a780e604e4cf03faf4a9727d602cb1'
             'bdca6069ef0fa995718f4b59fea85e58629259bb5a385d53e52d162d1463d4ff')
 
+pkgver() {
+  cd ${srcdir}/${pkgname}
+  git describe --all | sed -e 's|tags/v||'
+}
+
 prepare() {
-  cd ${srcdir}/${pkgname}-${pkgver}
+  cd ${srcdir}/${pkgname}
 
   iconv -f ISO-8859-1 -t UTF-8 runtime/doc/eval.txt \
     > runtime/doc/eval.tmp && mv -f runtime/doc/eval.{tmp,txt}
 
   patch -p2 -i ${srcdir}/7.3-cygwin-mouse.patch
   patch -p2 -i ${srcdir}/7.3-virc.patch
-  patch -p2 -i ${srcdir}/7.3-cygwin-python-dyn.patch
+  patch -p1 -i ${srcdir}/7.3-cygwin-python-dyn.patch
   patch -p1 -i ${srcdir}/pretend-cygwin-msys.patch
   patch -p1 -i ${srcdir}/accept-crlf.patch
 
@@ -52,7 +57,7 @@ prepare() {
 }
 
 build() {
-  cd ${srcdir}/${pkgname}-${pkgver}
+  cd ${srcdir}/${pkgname}
 
   ./configure \
     --prefix=/usr \
@@ -66,9 +71,10 @@ build() {
     --enable-pythoninterp=no \
     --enable-python3interp=dynamic \
     --enable-rubyinterp=dynamic \
-    --disable-tclinterp \
+    --enable-tclinterp=dynamic \
     --disable-gpm --disable-sysmouse \
     --disable-gui --without-x \
+    --with-luajit \
     CPPFLAGS="${CPPFLAGS} -I/usr/include/ncursesw" \
     --with-compiledby="<https://www.msys2.org/>"
 
@@ -79,13 +85,13 @@ build() {
 check() {
   # disable tests because they seem to freeze
 
-  cd "${srcdir}"/${pkgname}-${pkgver}
+  cd "${srcdir}"/${pkgname}
 
   #make test
 }
 
 package() {
-  cd "${srcdir}"/${pkgname}-${pkgver}
+  cd "${srcdir}"/${pkgname}
   make -j1 VIMRCLOC=/etc DESTDIR="${pkgdir}" install
 
   make install -j1 \
@@ -128,10 +134,10 @@ package() {
   install -Dm644 "${srcdir}"/dot.vimrc "${pkgdir}"/etc/skel/.vimrc
 
   # rgb.txt file
-  install -Dm644 "${srcdir}"/vim-${pkgver}/runtime/rgb.txt \
+  install -Dm644 "${srcdir}"/${pkgname}/runtime/rgb.txt \
     "${pkgdir}"/usr/share/vim/${_versiondir}/rgb.txt
 
   # license
-  install -Dm644 "${srcdir}"/vim-${pkgver}/runtime/doc/uganda.txt \
+  install -Dm644 "${srcdir}"/${pkgname}/runtime/doc/uganda.txt \
     "${pkgdir}"/usr/share/licenses/${pkgname}/license.txt
 }
