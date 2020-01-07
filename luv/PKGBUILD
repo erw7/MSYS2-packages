@@ -3,7 +3,7 @@
 pkgbase=luv
 pkgname=(libluv luajit-luv)
 pkgver=1.32.0
-pkgrel=1
+pkgrel=2
 arch=('i686' 'x86_64')
 license=('Apache')
 url='https://github.com/luvit/luv'
@@ -22,10 +22,10 @@ prepare() {
 build() {
   cmake -G Ninja -H${pkgbase}-${pkgver}-0 -Bbuild \
         -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_SHARED_LIBUV=ON \
+        -DWITH_SHARED_LIBUV=OFF \
         -DLUA_BUILD_TYPE=System \
         -DBUILD_MODULE=OFF \
-        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_SHARED_LIBS=OFF \
         -DCMAKE_BUILD_TYPE=Release
   cmake --build build
   DESTDIR=${srcdir}/dest cmake --build build --target install
@@ -43,10 +43,9 @@ build() {
 package_libluv() {
   pkgdesc='Libray of bare libuv bindings for LuaJIT'
 
-  install -Dm755 ${srcdir}/dest/usr/bin/*.dll -t ${pkgdir}/usr/bin/
   install -Dm644 ${srcdir}/dest/usr/include/luv/*.h \
     -t ${pkgdir}/usr/include/luv/
-  install -Dm644 ${srcdir}/dest/usr/lib/libluv.dll.a -t ${pkgdir}/usr/lib/
+  install -Dm644 ${srcdir}/dest/usr/lib/libluv.a -t ${pkgdir}/usr/lib/
   install -Dm644 ${srcdir}/dest/usr/lib/pkgconfig/libluv.pc \
     -t ${pkgdir}/usr/lib/pkgconfig/
   install -Dm644 ${srcdir}/${pkgbase}-${pkgver}-0/LICENSE.txt \

@@ -3,7 +3,7 @@
 pkgname=libvterm
 _git=7c72294
 pkgver=0.1.2.git5.${_git}
-pkgrel=1
+pkgrel=2
 pkgdesc='Abstract library implementation of a VT220/xterm/ECMA-48 terminal emulator'
 arch=('i686' 'x86_64')
 license=('MIT')
@@ -13,7 +13,7 @@ md5sums=('SKIP')
 
 build() {
   cd ${pkgname}
-  LDFLAGS="${LDFLAGS} -no-undefined" make PREFIX=/usr
+  make PREFIX=/usr
 }
 
 package() {

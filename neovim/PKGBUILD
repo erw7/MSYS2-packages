@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=neovim
-pkgver=v0.5.0_296_gfa9b057d3
+pkgver=v0.5.0
 pkgrel=1
 pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
 arch=('i686' 'x86_64')
@@ -21,7 +21,7 @@ pkgver() {
 
 build() {
   cmake -Hneovim -Bbuild -GNinja \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX=/usr
   ninja -C build
 }

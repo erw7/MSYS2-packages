@@ -1,7 +1,7 @@
 # Maintainer: erw7 <erw7.github@gmail.com>
 
 pkgname=unibilium
-pkgver=2.0.0
+pkgver=v2.0.0.r13.g92d929f
 pkgrel=1
 pkgdesc='A terminfo parsing library'
 arch=('i686' 'x86_64')
@@ -21,7 +21,7 @@ prepare() {
 
 build() {
   cd ${pkgname}
-  LDFLAGS="${LDFLAGS} -no-undefined" make PREFIX=/usr POD2MAN=/usr/bin/core_perl/pod2man
+  make PREFIX=/usr POD2MAN=/usr/bin/core_perl/pod2man
 }
 
 package() {

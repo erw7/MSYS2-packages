@@ -2,7 +2,7 @@
 
 pkgname=luajit
 pkgver=2.1
-pkgrel=1
+pkgrel=2
 pkgdesc='Just-in-time compiler and drop-in replacement for Lua 5.1'
 arch=('i686' 'x86_64')
 license=('MIT')
@@ -26,6 +26,9 @@ build() {
   cd ${srcdir}/LuaJIT
 
   CFLAGS="${CFLAGS} -fexceptions"
+  make BUILDMODE=static
+  install -Dm644 src/libluajit.a -t ${srcdir}/dest/usr/lib/
+  make HOST_RM="rm -f" clean
   make all \
        Q= E=@: \
        PREFIX=/usr \
@@ -46,4 +49,5 @@ package() {
        INSTALL_TNAME= \
        LDCONFIG=: RM=: SYMLINK=: \
        install
+  install -Dm644 ${srcdir}/dest/usr/lib/libluajit.a -t ${pkgdir}/usr/lib/
 }

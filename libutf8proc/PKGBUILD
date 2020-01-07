@@ -2,7 +2,7 @@
 
 pkgname=libutf8proc
 pkgver=2.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc='C library for processing UTF-8 encoded Unicode strings'
 arch=('i686' 'x86_64')
 license=(custom)
@@ -20,7 +20,7 @@ build() {
   cmake -G Ninja -Hutf8proc-${pkgver} -Bbuild \
   -DCMAKE_INSTALL_PREFIX=/usr \
   -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_SHARED_LIBS=ON
+  -DBUILD_SHARED_LIBS=OFF
   cmake --build build
 }
 

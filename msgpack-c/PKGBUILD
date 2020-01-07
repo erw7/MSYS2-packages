@@ -2,7 +2,7 @@
 
 pkgname=msgpack-c
 pkgver=3.2.1
-pkgrel=1
+pkgrel=2
 pkgdesc='An efficient object serialization library'
 arch=('i686' 'x86_64')
 license=('Apache')
@@ -15,11 +15,9 @@ build() {
   cmake -G Ninja -Hmsgpack-${pkgver} -Bbuild \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
-        -DBUILD_SHARED_LIBS=ON \
-        -DMSGPACK_ENABLE_STATIC=OFF \
+        -DMSGPACK_ENABLE_SHARED=OFF \
         -DMSGPACK_CXX11=ON \
-        -DMSGPKAC_BUILD_EXAMPLES=OFF \
-        -DBUILD_SHARED_LIBS=ON \
+        -DMSGPACK_BUILD_EXAMPLES=OFF \
         -DCMAKE_CXX_FLAGS="-D_GNU_SOURCE=1"
   cmake --build build
 }

@@ -2,7 +2,7 @@
 
 pkgname=libtermkey
 pkgver=0.22
-pkgrel=1
+pkgrel=2
 pkgdesc='Library for easy processing of keyboard entry from terminal-based programs'
 arch=('i686' 'x86_64')
 license=('MIT')
@@ -13,7 +13,7 @@ md5sums=('08bf514d59660391c3a21b3977a16c8c')
 
 build() {
   cd ${pkgname}-${pkgver}
-  LDFLAGS="${LDFLAGS} -no-undefined" make PREFIX=/usr
+  make PREFIX=/usr
 }
 
 package() {
