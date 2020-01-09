@@ -1,0 +1,205 @@
+--- llvm-8.0.1.src/cmake/config-ix.cmake.orig	2020-01-09 15:04:39.807903600 +0900
++++ llvm-8.0.1.src/cmake/config-ix.cmake	2020-01-09 15:05:59.577487100 +0900
+@@ -1,4 +1,4 @@
+-if( WIN32 AND NOT CYGWIN )
++if( WIN32 AND NOT (CYGWIN OR MSYS) )
+   # We consider Cygwin as another Unix
+   set(PURE_WINDOWS 1)
+ endif()
+--- llvm-8.0.1.src/cmake/modules/AddLLVM.cmake.orig	2020-01-09 15:11:03.933925300 +0900
++++ llvm-8.0.1.src/cmake/modules/AddLLVM.cmake	2020-01-09 15:12:38.045245500 +0900
+@@ -241,7 +241,7 @@
+ 
+   # module_dir -- corresponding to LIBRARY_OUTPUT_DIRECTORY.
+   # It affects output of add_library(MODULE).
+-  if(WIN32 OR CYGWIN)
++  if(WIN32 OR CYGWIN OR MSYS)
+     # DLL platform
+     set(module_dir ${ARG_BINARY_DIR})
+   else()
+@@ -538,7 +538,7 @@
+     endif()
+   endif()
+ 
+-  if(ARG_MODULE AND LLVM_EXPORT_SYMBOLS_FOR_PLUGINS AND ARG_PLUGIN_TOOL AND (WIN32 OR CYGWIN))
++  if(ARG_MODULE AND LLVM_EXPORT_SYMBOLS_FOR_PLUGINS AND ARG_PLUGIN_TOOL AND (WIN32 OR CYGWIN OR MSYS))
+     # On DLL platforms symbols are imported from the tool by linking against it.
+     set(llvm_libs ${ARG_PLUGIN_TOOL})
+   elseif (DEFINED LLVM_LINK_COMPONENTS OR DEFINED ARG_LINK_COMPONENTS)
+@@ -648,7 +648,7 @@
+         (LLVM_LINK_LLVM_DYLIB AND ${name} STREQUAL "LLVM"))
+       set(install_dir lib${LLVM_LIBDIR_SUFFIX})
+       if(ARG_MODULE OR ARG_SHARED OR BUILD_SHARED_LIBS)
+-        if(WIN32 OR CYGWIN OR MINGW)
++        if(WIN32 OR CYGWIN OR MSYS OR MINGW)
+           set(install_type RUNTIME)
+           set(install_dir bin)
+         else()
+@@ -839,10 +839,10 @@
+     # ".dll.a", but for clang.exe that causes a collision with libclang.dll,
+     # where the import libraries of both get named libclang.dll.a. Use a suffix
+     # of ".exe.a" to avoid this.
+-    if(CYGWIN OR MINGW)
++    if(CYGWIN OR MSYS OR MINGW)
+       set_target_properties(${target} PROPERTIES IMPORT_SUFFIX ".exe.a")
+     endif()
+-  elseif(NOT (WIN32 OR CYGWIN))
++  elseif(NOT (WIN32 OR CYGWIN OR MSYS))
+     # On Windows auto-exporting everything doesn't work because of the limit on
+     # the size of the exported symbol table, but on other platforms we can do
+     # it without any trouble.
+@@ -1306,7 +1306,7 @@
+   endif()
+ 
+   set(lit_file_name "llvm-lit")
+-  if (CMAKE_HOST_WIN32 AND NOT CYGWIN)
++  if (CMAKE_HOST_WIN32 AND NOT (CYGWIN OR MSYS))
+     # llvm-lit needs suffix.py for multiprocess to find a main module.
+     set(lit_file_name "${lit_file_name}.py")
+   endif ()
+--- llvm-8.0.1.src/cmake/modules/HandleLLVMOptions.cmake.orig	2020-01-09 15:18:19.906750100 +0900
++++ llvm-8.0.1.src/cmake/modules/HandleLLVMOptions.cmake	2020-01-09 15:16:50.438995800 +0900
+@@ -99,13 +99,13 @@
+ 
+ if(WIN32)
+   set(LLVM_HAVE_LINK_VERSION_SCRIPT 0)
+-  if(CYGWIN)
++  if(CYGWIN OR MSYS)
+     set(LLVM_ON_WIN32 0)
+     set(LLVM_ON_UNIX 1)
+-  else(CYGWIN)
++  else(CYGWIN OR MSYS)
+     set(LLVM_ON_WIN32 1)
+     set(LLVM_ON_UNIX 0)
+-  endif(CYGWIN)
++  endif(CYGWIN OR MSYS)
+ else(WIN32)
+   if(FUCHSIA OR UNIX)
+     set(LLVM_ON_WIN32 0)
+@@ -136,7 +136,7 @@
+ 
+ # Pass -Wl,-z,defs. This makes sure all symbols are defined. Otherwise a DSO
+ # build might work on ELF but fail on MachO/COFF.
+-if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR WIN32 OR CYGWIN OR
++if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR WIN32 OR CYGWIN OR MSYS OR
+         ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD" OR
+ 	${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD" OR
+ 	${CMAKE_SYSTEM_NAME} MATCHES "DragonFly") AND
+@@ -212,14 +212,14 @@
+     # Xcode has -mdynamic-no-pic on by default, which overrides -fPIC. I don't
+     # know how to disable this, so just force ENABLE_PIC off for now.
+     message(WARNING "-fPIC not supported with Xcode.")
+-  elseif( WIN32 OR CYGWIN)
++  elseif( WIN32 OR CYGWIN OR MSYS)
+     # On Windows all code is PIC. MinGW warns if -fPIC is used.
+   else()
+     add_flag_or_print_warning("-fPIC" FPIC)
+   endif()
+ endif()
+ 
+-if(NOT WIN32 AND NOT CYGWIN)
++if(NOT WIN32 AND NOT CYGWIN AND NOT MSYS)
+   # MinGW warns if -fvisibility-inlines-hidden is used.
+   check_cxx_compiler_flag("-fvisibility-inlines-hidden" SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG)
+   append_if(SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG "-fvisibility-inlines-hidden" CMAKE_CXX_FLAGS)
+@@ -424,7 +424,7 @@
+   else()
+     check_cxx_compiler_flag("-std=c++11" CXX_SUPPORTS_CXX11)
+     if (CXX_SUPPORTS_CXX11)
+-      if (CYGWIN OR MINGW)
++      if (CYGWIN OR MSYS OR MINGW)
+         # MinGW and Cygwin are a bit stricter and lack things like
+         # 'strdup', 'stricmp', etc in c++11 mode.
+         append("-std=gnu++11" CMAKE_CXX_FLAGS)
+@@ -755,7 +755,7 @@
+ # FIXME: With MSVS, consider compiling with /Gy and linking with /OPT:REF?
+ # But MinSizeRel seems to add that automatically, so maybe disable these
+ # flags instead if LLVM_NO_DEAD_STRIP is set.
+-if(NOT CYGWIN AND NOT WIN32)
++if(NOT CYGWIN AND NOT MSYS AND NOT WIN32)
+   if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND
+      NOT uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+     check_c_compiler_flag("-Werror -fno-function-sections" C_SUPPORTS_FNO_FUNCTION_SECTIONS)
+@@ -868,7 +868,7 @@
+ 
+ # Plugin support
+ # FIXME: Make this configurable.
+-if(WIN32 OR CYGWIN)
++if(WIN32 OR CYGWIN OR MSYS)
+   if(BUILD_SHARED_LIBS OR LLVM_BUILD_LLVM_DYLIB)
+     set(LLVM_ENABLE_PLUGINS ON)
+   else()
+--- llvm-8.0.1.src/CMakeLists.txt.orig	2020-01-09 15:19:37.654319300 +0900
++++ llvm-8.0.1.src/CMakeLists.txt	2020-01-09 15:20:14.373354400 +0900
+@@ -263,7 +263,7 @@
+ # They are used as destination of target generators.
+ set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
+ set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib${LLVM_LIBDIR_SUFFIX})
+-if(WIN32 OR CYGWIN)
++if(WIN32 OR CYGWIN OR MSYS)
+   # DLL platform -- put DLLs into bin.
+   set(LLVM_SHLIB_OUTPUT_INTDIR ${LLVM_RUNTIME_OUTPUT_INTDIR})
+ else()
+@@ -475,7 +475,7 @@
+ set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
+ 
+ # On Win32 hosts, provide an option to specify the path to the GnuWin32 tools.
+-if( WIN32 AND NOT CYGWIN )
++if( WIN32 AND NOT CYGWIN AND NOT MSYS )
+   set(LLVM_LIT_TOOLS_DIR "" CACHE PATH "Path to GnuWin32 tools")
+ endif()
+ 
+--- llvm-8.0.1.src/lib/Transforms/Hello/CMakeLists.txt.orig	2020-01-09 15:21:14.469493700 +0900
++++ llvm-8.0.1.src/lib/Transforms/Hello/CMakeLists.txt	2020-01-09 15:21:29.914074800 +0900
+@@ -6,7 +6,7 @@
+   endif()
+ endif()
+ 
+-if(WIN32 OR CYGWIN)
++if(WIN32 OR CYGWIN OR MSYS)
+   set(LLVM_LINK_COMPONENTS Core Support)
+ endif()
+ 
+--- llvm-8.0.1.src/tools/CMakeLists.txt.orig	2020-01-09 15:24:18.950979900 +0900
++++ llvm-8.0.1.src/tools/CMakeLists.txt	2020-01-09 15:23:54.808072500 +0900
+@@ -25,7 +25,7 @@
+   set(LLVM_TOOL_LLVM_JITLISTENER_BUILD Off)
+ endif()
+ 
+-if(CYGWIN OR NOT LLVM_ENABLE_PIC)
++if(CYGWIN OR MSYS OR NOT LLVM_ENABLE_PIC)
+   set(LLVM_TOOL_LTO_BUILD Off)
+   set(LLVM_TOOL_LLVM_LTO_BUILD Off)
+ endif()
+--- llvm-8.0.1.src/unittests/ExecutionEngine/MCJIT/CMakeLists.txt.orig	2020-01-09 15:25:17.135112300 +0900
++++ llvm-8.0.1.src/unittests/ExecutionEngine/MCJIT/CMakeLists.txt	2020-01-09 15:25:30.103100600 +0900
+@@ -29,6 +29,6 @@
+   ${MCJITTestsSources}
+   )
+ 
+-if(MINGW OR CYGWIN)
++if(MINGW OR CYGWIN OR MSYS)
+   set_property(TARGET MCJITTests PROPERTY LINK_FLAGS -Wl,--export-all-symbols)
+ endif()
+--- llvm-8.0.1.src/utils/benchmark/CMakeLists.txt.orig	2020-01-09 15:26:05.545845500 +0900
++++ llvm-8.0.1.src/utils/benchmark/CMakeLists.txt	2020-01-09 15:26:18.723680500 +0900
+@@ -170,7 +170,7 @@
+   # predefined macro, which turns on all of the wonderful libc extensions.
+   # However g++ doesn't do this in Cygwin so we have to define it ourselfs
+   # since we depend on GNU/POSIX/BSD extensions.
+-  if (CYGWIN)
++  if (CYGWIN OR MSYS)
+     add_definitions(-D_GNU_SOURCE=1)
+   endif()
+ 
+--- llvm-8.0.1.src/tools/bugpoint-passes/CMakeLists.txt.orig	2020-01-10 01:31:40.528938000 +0900
++++ llvm-8.0.1.src/tools/bugpoint-passes/CMakeLists.txt	2020-01-10 01:31:59.626526900 +0900
+@@ -10,7 +10,7 @@
+   endif()
+ endif()
+ 
+-if(WIN32 OR CYGWIN)
++if(WIN32 OR CYGWIN OR MSYS)
+   set(LLVM_LINK_COMPONENTS Core)
+ endif()
+ 

@@ -1,0 +1,43 @@
+--- llvm-8.0.1.src/lib/Support/Triple.cpp.orig	2020-01-10 01:23:49.274922200 +0900
++++ llvm-8.0.1.src/lib/Support/Triple.cpp	2020-01-10 01:27:17.740471500 +0900
+@@ -772,6 +772,7 @@
+ std::string Triple::normalize(StringRef Str) {
+   bool IsMinGW32 = false;
+   bool IsCygwin = false;
++  bool IsMsys = false;
+ 
+   // Parse into components.
+   SmallVector<StringRef, 4> Components;
+@@ -792,6 +793,7 @@
+   if (Components.size() > 2) {
+     OS = parseOS(Components[2]);
+     IsCygwin = Components[2].startswith("cygwin");
++    IsMsys = Components[2].startswith("msys");
+     IsMinGW32 = Components[2].startswith("mingw");
+   }
+   EnvironmentType Environment = UnknownEnvironment;
+@@ -837,8 +839,9 @@
+       case 2:
+         OS = parseOS(Comp);
+         IsCygwin = Comp.startswith("cygwin");
++        IsMsys = Comp.startswith("msys");
+         IsMinGW32 = Comp.startswith("mingw");
+-        Valid = OS != UnknownOS || IsCygwin || IsMinGW32;
++        Valid = OS != UnknownOS || IsCygwin || IsMsys || IsMinGW32;
+         break;
+       case 3:
+         Environment = parseEnvironment(Comp);
+@@ -946,8 +949,12 @@
+     Components.resize(4);
+     Components[2] = "windows";
+     Components[3] = "cygnus";
++  } else if (IsMsys) {
++    Components.resize(4);
++    Components[2] = "windows";
++    Components[3] = "cygnus";
+   }
+-  if (IsMinGW32 || IsCygwin ||
++  if (IsMinGW32 || IsCygwin || IsMsys ||
+       (OS == Triple::Win32 && Environment != UnknownEnvironment)) {
+     if (ObjectFormat != UnknownObjectFormat && ObjectFormat != Triple::COFF) {
+       Components.resize(5);

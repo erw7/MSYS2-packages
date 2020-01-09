@@ -1,0 +1,52 @@
+--- cfe-8.0.1.src/CMakeLists.txt.orig	2020-01-09 18:11:08.829832700 +0900
++++ cfe-8.0.1.src/CMakeLists.txt	2020-01-09 18:11:48.513569100 +0900
+@@ -89,7 +89,7 @@
+   # They are used as destination of target generators.
+   set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/bin)
+   set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/lib${LLVM_LIBDIR_SUFFIX})
+-  if(WIN32 OR CYGWIN)
++  if(WIN32 OR CYGWIN OR MSYS)
+     # DLL platform -- put DLLs into bin.
+     set(LLVM_SHLIB_OUTPUT_INTDIR ${LLVM_RUNTIME_OUTPUT_INTDIR})
+   else()
+@@ -181,7 +181,7 @@
+       set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
+ 
+       # On Win32 hosts, provide an option to specify the path to the GnuWin32 tools.
+-      if( WIN32 AND NOT CYGWIN )
++      if( WIN32 AND NOT CYGWIN AND NOT MSYS )
+         set(LLVM_LIT_TOOLS_DIR "" CACHE PATH "Path to GnuWin32 tools")
+       endif()
+     else()
+--- cfe-8.0.1.src/examples/analyzer-plugin/CMakeLists.txt.orig	2020-01-09 18:12:48.169891800 +0900
++++ cfe-8.0.1.src/examples/analyzer-plugin/CMakeLists.txt	2020-01-09 18:13:01.697256600 +0900
+@@ -1,7 +1,7 @@
+ set(LLVM_EXPORTED_SYMBOL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/SampleAnalyzerPlugin.exports)
+ add_llvm_library(SampleAnalyzerPlugin MODULE MainCallChecker.cpp PLUGIN_TOOL clang)
+ 
+-if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN))
++if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN OR MSYS))
+   target_link_libraries(SampleAnalyzerPlugin PRIVATE
+     clangAnalysis
+     clangAST
+--- cfe-8.0.1.src/examples/AnnotateFunctions/CMakeLists.txt.orig	2020-01-09 18:13:35.414780200 +0900
++++ cfe-8.0.1.src/examples/AnnotateFunctions/CMakeLists.txt	2020-01-09 18:13:48.387809500 +0900
+@@ -1,6 +1,6 @@
+ add_llvm_library(AnnotateFunctions MODULE AnnotateFunctions.cpp PLUGIN_TOOL clang)
+ 
+-if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN))
++if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN OF MSYS))
+   target_link_libraries(AnnotateFunctions PRIVATE
+     clangAST
+     clangBasic
+--- cfe-8.0.1.src/examples/PrintFunctionNames/CMakeLists.txt.orig	2020-01-09 18:14:29.023414700 +0900
++++ cfe-8.0.1.src/examples/PrintFunctionNames/CMakeLists.txt	2020-01-09 18:14:42.642030700 +0900
+@@ -11,7 +11,7 @@
+ 
+ add_llvm_library(PrintFunctionNames MODULE PrintFunctionNames.cpp PLUGIN_TOOL clang)
+ 
+-if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN))
++if(LLVM_ENABLE_PLUGINS AND (WIN32 OR CYGWIN OR MSYS))
+   target_link_libraries(PrintFunctionNames PRIVATE
+     clangAST
+     clangBasic

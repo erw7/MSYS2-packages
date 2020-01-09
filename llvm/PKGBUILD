@@ -1,0 +1,93 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=llvm
+pkgver=8.0.1
+pkgrel=1
+pkgdesc='Low Level Virtual Machine (msys)'
+arch=('i686' 'x86_64')
+license=('custom:Apache 2.0 with LLVM Exception')
+url="https://llvm.org/"
+depends=('gcc-libs' 'libffi')
+makedepends=('cmake' 'ninja' 'libffi-devel')
+source=(https://github.com/llvm/llvm-project/releases/download/llvmorg-${pkgver}/llvm-${pkgver}.src.tar.xz
+        https://github.com/llvm/llvm-project/releases/download/llvmorg-${pkgver}/polly-${pkgver}.src.tar.xz
+        '0001-PATCH-Filter-out-cxxflags-not-supported-by-clang.patch'
+        '0001-PATCH-llvm-config.patch'
+        '4.0.1-cmake-install.patch'
+        '8.0.1-cmodel-medium.patch'
+        '8.0.1-llvm-config.patch'
+        '8.0.1-as-needed-shared.patch'
+        '8.0.1-ocaml-shared.patch'
+        '8.0.1-polly-cmake.patch'
+        '8.0.1-msys-cmake.patch'
+        '8.0.1-msys-triple.patch')
+md5sums=('9a3b63df01c52556f7afb5617934e79e'
+         '1ef3f82d49d0fb00fa92ce6e1b095da1'
+         'f035f4ef2780b8ebd2579f08b9e07292'
+         'e2f202f4d225db51996a77186786b539'
+         '02a9e089bb300bdaa8b16cdf9e9f9a56'
+         '87fa8462598df39ab96592a17aecdd03'
+         'be11ff25d57509737fa3ca20eb0108cf'
+         'b39708c7d76b60a8e08c693ee3743883'
+         'b5259b4dec391868a8f216c54985c3b9'
+         'a64ac053c584f2a50a8b99689bc9c041'
+         'a760835084b945e473f7b4fb4a910e4a'
+         'e3e6a64cec7f7a05eef8fdc0af99b53e')
+
+prepare() {
+  cd ${srcdir}/llvm-${pkgver}.src
+
+  [ ! -d tools/polly ] || find tools/polly -delete
+  mv ../polly-${pkgver}.src tools/polly
+
+  patch -p1 -i ${srcdir}/0001-PATCH-Filter-out-cxxflags-not-supported-by-clang.patch
+  patch -p1 -i ${srcdir}/0001-PATCH-llvm-config.patch
+  patch -p2 -i ${srcdir}/4.0.1-cmake-install.patch
+  patch -p2 -i ${srcdir}/8.0.1-cmodel-medium.patch
+  patch -p2 -i ${srcdir}/8.0.1-llvm-config.patch
+  patch -p2 -i ${srcdir}/8.0.1-as-needed-shared.patch
+  patch -p2 -i ${srcdir}/8.0.1-ocaml-shared.patch
+  patch -p2 -i ${srcdir}/8.0.1-polly-cmake.patch
+  patch -p1 -i ${srcdir}/8.0.1-msys-cmake.patch
+  patch -p1 -i ${srcdir}/8.0.1-msys-triple.patch
+
+  mkdir build
+}
+
+build() {
+  cd ${srcdir}/llvm-${pkgver}.src/build
+
+  # leave optimization to build system, fails to dlopen with -O2
+  CFLAGS=${CFLAGS/-O[0-9]/}
+  CXXFLAGS=${CXXFLAGS/-O[0-9]/}
+
+  cmake .. -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_C_FLAGS_RELWITHDEBINFO="-g1 -DNDEBUG" \
+    -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-g1 -DNDEBUG" \
+    -DLLVM_TARGETS_TO_BUILD=X86 \
+    -DLLVM_ENABLE_LIBCXX=OFF \
+    -DLLVM_ENABLE_ZLIB=ON \
+    -DLLVM_ENABLE_FFI=ON \
+    -DLLVM_ENABLE_RTTI=ON \
+    -DLLVM_INCLUDE_RUNTIME=ON -DLLVM_BUILD_RUNTIME=ON \
+    -DLLVM_INCLUDE_TOOLS=ON -DLLVM_BUILD_TOOLS=ON \
+    -DLLVM_INCLUDE_TESTS=ON -DLLVM_BUILD_TESTS=ON \
+    -DLLVM_INCLUDE_EXAMPLES=ON -DLLVM_BUILD_EXAMPLES=OFF \
+    -DLLVM_INCLUDE_UTILS=ON -DLLVM_BUILD_UTILS=OFF \
+    -DLLVM_INCLUDE_DOCS=ON -DLLVM_BUILD_DOCS=ON \
+    -DLLVM_ENABLE_SPHINX=OFF -DSPHINX_WARNINGS_AS_ERRORS=OFF \
+    -DLLVM_ENABLE_DOXYGEN=OFF \
+    -DLLVM_BUILD_LLVM_DYLIB=OFF -DLLVM_LINK_LLVM_DYLIB=OFF \
+    -DLLVM_BUILD_EXTERNAL_COMPILER_RT=OFF \
+    -DFFI_INCLUDE_PATH=/usr/lib/libffi-3.2.1/include
+  ninja
+}
+
+package() {
+  cd ${scdir}/llvm-${pkgver}.src/build
+
+  DESTDIR=${pkgdir} ninja install
+}

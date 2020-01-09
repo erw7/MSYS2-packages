@@ -1,0 +1,88 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=clang
+pkgver=8.0.1
+pkgrel=1
+pkgdesc='C language family frontend for LLVM (msys)'
+arch=('i686' 'x86_64')
+license=('custom:Apache 2.0 with LLVM Exception')
+url="https://llvm.org/"
+depends=('llvm')
+makedepends=('cmake' 'ninja')
+source=(https://github.com/llvm/llvm-project/releases/download/llvmorg-${pkgver}/cfe-${pkgver}.src.tar.xz
+        https://github.com/llvm/llvm-project/releases/download/llvmorg-${pkgver}/clang-tools-extra-${pkgver}.src.tar.xz
+        '3.9.1-lib-soversion.patch'
+        '7.0.1-linux-includes.patch'
+        '7.0.1-mingw-sjlj.patch'
+        '7.0.1-mingw-stdcxxlibs.patch'
+        '7.0.1-mingw-sysroot.patch'
+        '7.0.1-cygwin-basic.patch'
+        '7.0.1-cygwin-driver.patch'
+        '5.0.1-newlib-ftm.patch'
+        '7.0.1-objc-seh.patch'
+        '8.0.1-polly-cmake.patch'
+        '8.0.1-msys-cmake.patch')
+md5sums=('28db72b57ca99307259773e4ac74a6d3'
+         'b7c55438f792a1d5698696100a8731e0'
+         'ee8c961a5c4cd6fc04530672fbfddd7a'
+         'd2c083c3da7fd01cf36b7829feb48962'
+         'c6e8d3ea4880fe4b20f69665dee10876'
+         '81114bc2c60fd86d5124d420e01486d5'
+         'bd190d53bcaefcc52de3b8f28a07b490'
+         '1e9ece030f5222bef2cb3265ad22ee37'
+         '7d0d7ad7f28f337fa77efd522aec9251'
+         '7cc82a69aeae425cfa82bae032f06075'
+         'aef8293e499de3b474beb68cea4496be'
+         'a6757dec34c9c4073b49f71b17d72804'
+         '6ab94d54695fe9890d0e231dd7e3f863')
+
+LDFLAGS+=" -Wl,--allow-multiple-definition"
+
+prepare() {
+  cd ${srcdir}/cfe-${pkgver}.src
+
+  mv ${srcdir}/clang-tools-extra-${pkgver}.src tools/extra
+
+  patch -p2 -i ${srcdir}/3.9.1-lib-soversion.patch
+  patch -p2 -i ${srcdir}/7.0.1-linux-includes.patch
+  patch -p2 -i ${srcdir}/7.0.1-mingw-sjlj.patch
+  patch -p2 -i ${srcdir}/7.0.1-mingw-stdcxxlibs.patch
+  patch -p2 -i ${srcdir}/7.0.1-mingw-sysroot.patch
+  patch -p2 -i ${srcdir}/7.0.1-cygwin-basic.patch
+  patch -p2 -i ${srcdir}/7.0.1-cygwin-driver.patch
+  patch -p2 -i ${srcdir}/5.0.1-newlib-ftm.patch
+  patch -p2 -i ${srcdir}/7.0.1-objc-seh.patch
+  patch -p2 -i ${srcdir}/8.0.1-polly-cmake.patch
+  patch -p1 -i ${srcdir}/8.0.1-msys-cmake.patch
+
+  mkdir build
+}
+
+build() {
+  cd ${srcdir}/cfe-${pkgver}.src/build
+
+  # leave optimization to build system, fails to dlopen with -O2
+  CFLAGS=${CFLAGS/-O[0-9]/}
+  CXXFLAGS=${CXXFLAGS/-O[0-9]/}
+
+  cmake .. -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DLLVM_CONFIG=/usr/bin/llvm-config \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCLANG_ENABLE_ARCMT=ON \
+    -DCLANG_ENABLE_STATIC_ANALYZER=ON \
+    -DCLANG_INCLUDE_TESTS=ON -DCLANG_BUILD_TESTS=ON \
+    -DCLANG_INCLUDE_EXAMPLES=ON -DCLANG_BUILD_EXAMPLES=OFF \
+    -DCLANG_INCLUDE_DOCS=ON -DCLANG_BUILD_DOCS=ON \
+    -DLLVM_ENABLE_SPHINX:BOOL=OFF -DSPHINX_WARNINGS_AS_ERRORS:BOOL=OFF \
+    -DLLVM_ENABLE_DOXYGEN:BOOL=OFF \
+    -DGCC_INSTALL_PREFIX=/usr \
+    -DLINK_POLLY_INTO_TOOLS=ON -DWITH_POLLY=ON
+  ninja
+}
+
+package() {
+  cd ${scdir}/cfe-${pkgver}.src/build
+
+  DESTDIR=${pkgdir} ninja install
+}
