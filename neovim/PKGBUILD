@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=neovim
-pkgver=v0.5.0_297_g83b0054b8
+pkgver=v0.5.0_309_g05ea3c199
 pkgrel=1
 pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
 arch=('i686' 'x86_64')
