@@ -19,15 +19,6 @@ diff --git a/src/scriptfile.c b/src/scriptfile.c
 index 30f9e9d..c2d6e0f 100644
 --- a/src/scriptfile.c
 +++ b/src/scriptfile.c
-@@ -861,7 +861,7 @@ struct source_cookie
-     char_u	*nextline;	// if not NULL: line that was read ahead
-     linenr_T	sourcing_lnum;	// line number of the source file
-     int		finished;	// ":finish" used
--#ifdef USE_CRNL
-+#if defined(__MSYS__) || defined(USE_CRNL)
-     int		fileformat;	// EOL_UNKNOWN, EOL_UNIX or EOL_DOS
-     int		error;		// TRUE if LF found after CR-LF
- #endif
 @@ -1067,7 +1067,7 @@ do_source(fname, check_other, is_vimrc)
      else if (is_vimrc == DOSO_GVIMRC)
  	vimrc_found(fname_exp, (char_u *)"MYGVIMRC");
@@ -90,6 +81,77 @@ index 7243a0c..3278bd7 100644
  	if (state->linelen > 1 && state->linebuf[state->linelen - 2] == '\r')
  	    state->linebuf[state->linelen - 2] = NUL;
  #endif
--- 
-2.5.2
-
+diff --git a/src/clipboard.c b/src/clipboard.c
+index c26349291..e80cb1847 100644
+--- a/src/clipboard.c
++++ b/src/clipboard.c
+@@ -2112,7 +2112,7 @@ clip_convert_selection(char_u **str, long_u *len, Clipboard_T *cbd)
+     else
+ 	y_ptr = get_y_register(STAR_REGISTER);
+ 
+-# ifdef USE_CRNL
++# if defined(__MSYS__) || defined(USE_CRNL)
+     eolsize = 2;
+ # else
+     eolsize = 1;
+@@ -2140,7 +2140,7 @@ clip_convert_selection(char_u **str, long_u *len, Clipboard_T *cbd)
+ 	    p[i] = NUL;
+ 	else if (y_ptr->y_array[lnum][j] == NUL)
+ 	{
+-# ifdef USE_CRNL
++# if defined(__MSYS__) || defined(USE_CRNL)
+ 	    p[i++] = '\r';
+ # endif
+ 	    p[i] = '\n';
+diff --git a/src/misc1.c b/src/misc1.c
+index 010622ee5..26c5da0ce 100644
+--- a/src/misc1.c
++++ b/src/misc1.c
+@@ -2497,7 +2497,7 @@ get_cmd_output_as_rettv(
+     else
+     {
+ 	res = get_cmd_output(tv_get_string(&argvars[0]), infile, flags, NULL);
+-#ifdef USE_CRNL
++#if defined(__MSYS__) || defined(USE_CRNL)
+ 	// translate <CR><NL> into <NL>
+ 	if (res != NULL)
+ 	{
+diff --git a/src/option.h b/src/option.h
+index 4bc189ca7..8f9588279 100644
+--- a/src/option.h
++++ b/src/option.h
+@@ -105,7 +105,7 @@ typedef enum {
+ #define FF_MAC		"mac"
+ #define FF_UNIX		"unix"
+ 
+-#ifdef USE_CRNL
++#if defined(__MSYS__) || defined(USE_CRNL)
+ # define DFLT_FF	"dos"
+ # define DFLT_FFS_VIM	"dos,unix"
+ # define DFLT_FFS_VI	"dos,unix"	// also autodetect in compatible mode
+diff --git a/src/optiondefs.h b/src/optiondefs.h
+index 6cea0177c..75a2042f4 100644
+--- a/src/optiondefs.h
++++ b/src/optiondefs.h
+@@ -2593,7 +2593,7 @@ static struct vimoption options[] =
+     {"textmode",    "tx",   P_BOOL|P_VI_DEF|P_NO_MKRC,
+ 			    (char_u *)&p_tx, PV_TX,
+ 			    {
+-#ifdef USE_CRNL
++#if defined(__MSYS__) || defined(USE_CRNL)
+ 			    (char_u *)TRUE,
+ #else
+ 			    (char_u *)FALSE,
+diff --git a/src/structs.h b/src/structs.h
+index d6bf6672a..986b4b366 100644
+--- a/src/structs.h
++++ b/src/structs.h
+@@ -4313,7 +4313,7 @@ typedef struct {
+     char_u	*nextline;	// if not NULL: line that was read ahead
+     linenr_T	sourcing_lnum;	// line number of the source file
+     int		finished;	// ":finish" used
+-#ifdef USE_CRNL
++#if defined(__MSYS__) || defined(USE_CRNL)
+     int		fileformat;	// EOL_UNKNOWN, EOL_UNIX or EOL_DOS
+     int		error;		// TRUE if LF found after CR-LF
+ #endif

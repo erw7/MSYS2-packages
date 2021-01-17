@@ -4,7 +4,7 @@ pkgname=vim
 _topver=8.2
 _patchlevel=2292
 _versiondir="${pkgname}${_topver//./}"
-pkgver=8.2.0129
+pkgver=8.2.2366
 pkgrel=1
 arch=('i686' 'x86_64')
 license=('custom:vim')
@@ -26,7 +26,7 @@ sha256sums=('SKIP'
             '44d7738a8f801195898eeef766ff77506c717dd5d19145ade3c1c2349d4bc4fd'
             '11575601156d935bfef63fbbaa0406e667bbdb8a813b97932fde5d200d65e235'
             '99ef4ca5a03828b95c3e3b06ace2a996afdb8a4f52bb8102ec535e7eeefbc9c6'
-            'd72569b4f9ba031a6769a49bddd3a4f740a780e604e4cf03faf4a9727d602cb1'
+            'd2bd6527f30c4712cef32b7e7980904a8594a1b9892e8c85184463b4ee78eb21'
             'bdca6069ef0fa995718f4b59fea85e58629259bb5a385d53e52d162d1463d4ff')
 
 pkgver() {
