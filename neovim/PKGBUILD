@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=neovim
-pkgver=v0.5.0_319_gacaf5d233
+pkgver=v0.5.0_1050_g78f0f00cd
 pkgrel=1
 pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
 arch=('i686' 'x86_64')
@@ -21,10 +21,11 @@ pkgver() {
 }
 
 build() {
-  # If CMAKE_BUILD_TYPE=Release, an abnormally terminated binary is created,
-  # so use RelWithDebInfo.
+  # If the ipa-reference-addressable flags is enabled, an abnormally terminated
+  # binary is created, so disable ipa-reference-addressable flags.
   cmake -Hneovim -Bbuild -GNinja \
-        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_C_FLAGS_RELEASE="-O2 -fno-ipa-reference-addressable" \
         -DCMAKE_INSTALL_PREFIX=/usr
   ninja -C build
 }
