@@ -10,12 +10,14 @@ license=('GPL3')
 depends=('sh')
 makedepends=('gcc')
 url="https://mintty.github.io"
-source=(${pkgname}-${pkgver}.tar.gz::https://github.com/mintty/mintty/archive/${pkgver}.tar.gz)
-sha256sums=('6b3dc3e477a4d321e541ae0fa251d0ba187203c487a1a4333609790f3571b2ca')
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/mintty/mintty/archive/${pkgver}.tar.gz
+        0003-add-powerlinezoom-option.patch)
+sha256sums=('6b3dc3e477a4d321e541ae0fa251d0ba187203c487a1a4333609790f3571b2ca'
+            '6383ac5abaff97ab2222e3d5a857debb01eb3eac50f1f3841516f3ac76d0bee1')
 
 prepare() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-
+  patch -p1 -i ${srcdir}/0003-add-powerlinezoom-option.patch
 }
 
 build() {

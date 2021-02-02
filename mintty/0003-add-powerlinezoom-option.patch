@@ -1,0 +1,51 @@
+commit cf3a28b8653b3697c11d151c94c58abcc52fc01c
+Author: erw7 <erw7.github@gmail.com>
+Date:   Tue Feb 2 15:12:22 2021 +0900
+
+    add PowerlineZoom option
+
+diff --git a/src/config.c b/src/config.c
+index 8816de6..e82f6f1 100644
+--- a/src/config.c
++++ b/src/config.c
+@@ -88,6 +88,7 @@ const config default_cfg = {
+   .locale = "",
+   .charset = "",
+   .charwidth = 0,
++  .powerlinezoom = true,
+   .old_locale = false,
+   .fontmenu = -1,
+   .tek_font = W(""),
+@@ -332,6 +333,7 @@ options[] = {
+   {"Locale", OPT_STRING, offcfg(locale)},
+   {"Charset", OPT_STRING, offcfg(charset)},
+   {"Charwidth", OPT_CHARWIDTH, offcfg(charwidth)},
++  {"PowerlineZoom", OPT_BOOL, offcfg(powerlinezoom)},
+   {"OldLocale", OPT_BOOL, offcfg(old_locale)},
+   {"FontRender", OPT_FONTRENDER, offcfg(font_render)},
+   {"FontMenu", OPT_INT, offcfg(fontmenu)},
+diff --git a/src/config.h b/src/config.h
+index 5c552fb..0e2f13f 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -82,6 +82,7 @@ typedef struct {
+   string locale;
+   string charset;
+   char charwidth;
++  bool powerlinezoom;
+   bool old_locale;
+   int fontmenu;
+   wstring tek_font;
+diff --git a/src/term.c b/src/term.c
+index 1b6a9c8..40809d4 100644
+--- a/src/term.c
++++ b/src/term.c
+@@ -2339,7 +2339,7 @@ term_paint(void)
+       * Check the font we'll _probably_ be using to see if
+       * the character is wide when we don't want it to be.
+       */
+-      if (tchar >= 0xE0B0 && tchar < 0xE0C0) {
++      if (cfg.powerlinezoom && (tchar >= 0xE0B0 && tchar < 0xE0C0)) {
+         // special handling for geometric "Powerline" symbols
+         tattr.attr |= TATTR_ZOOMFULL;
+         if (cs_ambig_wide) {
