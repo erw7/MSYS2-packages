@@ -2,13 +2,21 @@
 
 pkgname=libvterm
 pkgver=0.1.4
-pkgrel=1
+pkgrel=2
 pkgdesc='Abstract library implementation of a VT220/xterm/ECMA-48 terminal emulator'
 arch=('i686' 'x86_64')
 license=('MIT')
 url='https://github.com/neovim/libvterm'
-source=(http://www.leonerd.org.uk/code/${pkgname}/${pkgname}-0.1.4.tar.gz)
-md5sums=('3bf5bbb91cd99adc523a954b10005511')
+source=(http://www.leonerd.org.uk/code/${pkgname}/${pkgname}-0.1.4.tar.gz
+        0001-add-user-func.patch)
+md5sums=('3bf5bbb91cd99adc523a954b10005511'
+         '1b6115deef7cda287fd57cdece4750ac')
+
+prepare() {
+  cd ${pkgname}
+
+  patch -p1 -i ${srcdir}/0001-add-user-func.patch
+}
 
 build() {
   cd ${pkgname}
