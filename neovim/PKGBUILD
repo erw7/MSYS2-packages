@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 
 pkgname=neovim
-pkgver=v0.5.0_1050_g78f0f00cd
+pkgver=v0.5.0_1206_g6a4a96d91
 pkgrel=1
 pkgdesc='Fork of Vim aiming to improve user experience, plugins, and GUIs'
 arch=('i686' 'x86_64')
@@ -12,7 +12,7 @@ depends=('libiconv' 'libintl' 'libluv' 'libtermkey' 'libutf8proc' 'libuv'
 makedepends=('cmake' 'gettext-devel' 'gperf' 'libiconv-devel' 'luajit-mpack'
              'luajit-busted' 'luajit-nvim' 'ninja' )
 groups=('editors')
-source=(git+https://github.com/neovim/neovim)
+source=(git+https://github.com/erw7/neovim#branch=experiment-v0.5.0)
 sha256sums=('SKIP')
 
 pkgver() {
