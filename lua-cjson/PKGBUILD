@@ -1,0 +1,48 @@
+# Maintainer: erw7 <erw7.github@gmail.com>
+
+pkgname=lua-cjson
+pkgver=2.1.0
+pkgrel=1
+pkgdesc='A fast JSON parsing adn encoding support for Lua.'
+arch=('i686' 'x86_64')
+license=('custom:MIT')
+url='https://www.kyne.com.au/~mark/software/lua-cjson.php'
+depends=(luajit)
+source=("https://www.kyne.com.au/~mark/software/download/$pkgname-$pkgver.tar.gz"
+        0000-no-test.patch
+        0001-remove-luaL_checkstack.patch
+        0002-fix-lib.patch)
+md5sums=('24f270663e9f6ca8ba2a02cef19f7963'
+         '39475544badeb963f0bf95acd69dce71'
+         '7f7d2382c0a546256c83cfde215a1f78'
+         '7a9e6111d8bf4073959c948ea99d4b4e')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  patch -p1 -i "$srcdir/0000-no-test.patch"
+  patch -i "$srcdir/0001-remove-luaL_checkstack.patch"
+  patch -i "$srcdir/0002-fix-lib.patch"
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make TARGET=cjson.dll \
+       PREFIX=/usr  \
+       LUA_INCLUDE_DIR=/usr/include/luajit-2.1 \
+       LUA_CMODULE_DIR=/usr/lib/luajit/2.1 \
+       LUA_MODULE_DIR=/usr/share/lua/$(LUA_VERSION) \
+       CJSON_CFLAGS="-DUSE_INTERNAL_FPCONV" \
+       CJSON_LDFLAGS="-shared -L$(PREFIX)/lib -lluajit-5.1"
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make TARGET=cjson.dll \
+       PREFIX=/usr \
+       LUA_CMODULE_DIR=/usr/lib/luajit/2.1 \
+       LUA_MODULE_DIR=/usr/share/lua/$(LUA_VERSION) \
+       DESTDIR="$pkgdir/" \
+       install{,-extra}
+  install -Dm644 LICENSE \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
