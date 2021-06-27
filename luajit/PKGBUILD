@@ -1,7 +1,7 @@
 # Maintainer: erw7 <erw7.github@gmail.com>
 
 pkgname=luajit
-pkgver=2.1
+pkgver=2.1_204_ge9577376
 pkgrel=1
 pkgdesc='Just-in-time compiler and drop-in replacement for Lua 5.1'
 arch=('i686' 'x86_64')
@@ -14,6 +14,11 @@ source=(git+https://github.com/LuaJIT/LuaJIT#branch=v2.1
 sha256sums=('SKIP'
             'de4d5b455d340ca92b6ddef38dbea5b81c42f3aa3b1b7036ea0f721a8adf6624'
             '02ee772f138f792077b9074eb7aa89d4668de7dc186edb38af446f78bc1e84ac')
+
+pkgver() {
+  cd ${pkgname}
+  git describe --first-parent | sed "s/v2.1.0-beta3/2.1/;s/-/_/g"
+}
 
 prepare() {
   cd ${srcdir}/LuaJIT
